@@ -173,5 +173,4 @@ TEST(CartesianProductTest, InvalidInputTest) {
     std::vector<std::vector<SetElement>> expected = {};
     auto result = cartesianProduct(sets);
 
-    ASSERT_EQ(expected.size(), result.size());
-}
+    ASSERT_EQ(expected.size(), result.size());}
