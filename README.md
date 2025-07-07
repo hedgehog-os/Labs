@@ -1,1 +1,1 @@
-# Здесь находятся все мои лабораторные работы 
+# This repository stores all my projects still from university
