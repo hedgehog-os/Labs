@@ -1,1 +1,2 @@
-# This folder contains my projects on scikit-learn
+# scikit-learn
+This folder contains my projects on scikit-learn
