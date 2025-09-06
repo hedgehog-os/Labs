@@ -1,2 +1,2 @@
 # RPIIS
-folder of subject Representation and processing of information in intelligent systems.
+Folder of subject Representation and Processing of Information in Intelligent Systems. There I learned LaTex, use Git and GitHub, advanced formalization of concepts, mathematics formuls and algorithms
