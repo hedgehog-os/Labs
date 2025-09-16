@@ -1,5 +1,5 @@
 import pytest
-from lab1.Post_Machine import PostMachine, Mark, Clear, Right, Left, Jump, Stop, parse
+from Post_Machine import PostMachine, Mark, Clear, Right, Left, Jump, Stop, parse
 
 def test_mark_and_clear():
     tape = "000"

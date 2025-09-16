@@ -1,5 +1,5 @@
 import pytest
-from lab1.Multiset import Multiset
+from Multiset import Multiset
 
 def test_atomic_elements():
     m = Multiset('{a, b, a}')
@@ -121,3 +121,38 @@ def test_invalid_but_tolerated_structure():
     assert 'a' in m
     assert Multiset('{b, {}}') in m
     assert m.cardinality() == 2
+
+def test_hash_and_repr():
+    ms = Multiset('{a, b, a}')
+    assert isinstance(hash(ms), int)
+    assert repr(ms) == f"Multiset({ms.multiset})"
+
+def test_contains_and_eq():
+    ms1 = Multiset('{x, y}')
+    ms2 = Multiset('{x, y}')
+    assert 'x' in ms1
+    assert ms1 == ms2
+
+def test_iadd_isub_imul():
+    ms1 = Multiset('{a, b, b}')
+    ms2 = Multiset('{b, b, c}')
+    ms1 += ms2
+    assert ms1.cardinality() == 6
+    ms1 -= Multiset('{b, b}')
+    assert ms1.multiset['b'] == 2
+    ms1 *= Multiset('{b, b, b}')
+    assert ms1.multiset['b'] == 2
+
+def test_delete_ndelete():
+    ms = Multiset('{a, a, b}')
+    ms.ndelete('a', 1)
+    assert ms.multiset['a'] == 1
+    ms.delete('a')
+    assert 'a' not in ms.multiset
+
+def test_is_empty_and_bolean():
+    ms = Multiset('{}')
+    assert ms.is_empty()
+    ms2 = Multiset('{x, x}')
+    subsets = ms2.bolean()
+    assert any(isinstance(sub, Multiset) for sub in subsets)
