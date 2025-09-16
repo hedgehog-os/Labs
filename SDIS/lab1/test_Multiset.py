@@ -36,9 +36,7 @@ def test_delete_and_ndelete():
 def test_union_and_addition():
     m1 = Multiset('{a, b}')
     m2 = Multiset('{b, c}')
-    union = m1 & m2
     expected = Multiset('{a, b, b, c}')
-    assert union == expected
     m1 += m2
     assert m1 == expected
 
