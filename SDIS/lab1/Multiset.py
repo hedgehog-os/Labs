@@ -11,7 +11,7 @@ class Multiset:
         @param element Элемент (строка или другой Multiset).
         """
         ...
-    
+
         if element in self.multiset:
             self.multiset[element] += 1
         else:
@@ -26,6 +26,12 @@ class Multiset:
         ...
 
         self.multiset = {}
+
+        if isinstance(s, dict):
+            for elem, count in s.items():
+                for _ in range(count):
+                    self.to_multiset(elem)
+            return
 
         # Вспомогательные переменные для парсинга строки
         depth = 0 
@@ -135,12 +141,31 @@ class Multiset:
 
         return result
     
+    def __add__(self, other):
+        """
+        @brief Оператор + для объединения мультимножеств.
+        @param other Второе мультимножество.
+        @return Новое объединённое мультимножество.
+        """
+        ...
+
+        result = Multiset('{}')
+        for elem, count in self.multiset.items():
+            for _ in range(count):
+                result.to_multiset(elem)
+        for elem, count in other.multiset.items():
+            for _ in range(count):
+                result.to_multiset(elem)
+        return result
+
+
     def __iadd__(self, other):
         """
         @brief Инкрементальное объединение с другим мультимножеством.
         @param other Второе мультимножество.
         @return Обновлённый self.
         """
+        ...
 
         for elem, count in other.multiset.items():
             for _ in range(count):
