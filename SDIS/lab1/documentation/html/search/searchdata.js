@@ -2,8 +2,8 @@ var indexSectionsWithContent =
 {
   0: "_bcdehijlmnprst",
   1: "cjlmprs",
-  2: "mpt",
-  3: "mpt",
+  2: "mp",
+  3: "mp",
   4: "_bcdeinprt",
   5: "chijmpst"
 };
@@ -20,11 +20,11 @@ var indexSectionNames =
 
 var indexSectionLabels =
 {
-  0: "Указатель",
-  1: "Классы",
-  2: "Пространства имен",
-  3: "Файлы",
-  4: "Функции",
-  5: "Переменные"
+  0: "All",
+  1: "Classes",
+  2: "Namespaces",
+  3: "Files",
+  4: "Functions",
+  5: "Variables"
 };
 

@@ -1,4 +1,0 @@
-var dir_cad4df1efda12d691880034e67c6bc1e =
-[
-    [ "lab1", "dir_883c3e13748457530c1c53c34e212338.html", "dir_883c3e13748457530c1c53c34e212338" ]
-];

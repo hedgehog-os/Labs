@@ -1,4 +1,4 @@
-digraph "Легенда"
+digraph "Graph Legend"
 {
  // LATEX_PDF_SIZE
   bgcolor="transparent";
