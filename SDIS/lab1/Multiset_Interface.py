@@ -28,8 +28,6 @@ def main():
         try:
             choice = input('').strip()
             parts = choice.split()
-            print(f"Ввод: {choice}")
-            print(f"Разбито: {parts}")
 
             if not parts:
                 continue
@@ -40,10 +38,6 @@ def main():
 
             elif parts[0] == 'show' and len(parts) > 1 and parts[1] in multisets:
                 print(f"{parts[1]} = {multisets[parts[1]]}")
-
-            elif '=' in choice:
-                name, mul = choice.split('=', 1)
-                multisets[name.strip()] = Multiset(mul.strip())
 
             elif parts[0] == 'delete' and len(parts) > 2 and parts[1] in multisets:
                 if parts[2] in multisets[parts[1]].multiset:
@@ -87,6 +81,10 @@ def main():
                 print(f"Bolean {parts[1]} contains {len(result)} subsets:")
                 for subset in result:
                     print(subset)
+
+            elif '=' in choice:
+                name, mul = choice.split('=', 1)
+                multisets[name.strip()] = Multiset(mul.strip())
 
             elif parts[0] == 'help':
                 print('''
