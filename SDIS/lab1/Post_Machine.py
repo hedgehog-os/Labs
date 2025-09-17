@@ -154,11 +154,11 @@ def parse(commands):
             _, j = command.split()
             result.append(Clear(int(j)))
         
-        elif command[0] == '→':
+        elif command[0] == '→' or command[0] == 'r':
             _, j = command.split()
             result.append(Right(int(j)))
 
-        elif command[0] == '←':
+        elif command[0] == '←' or command[0] == 'l':
             _, j = command.split()
             result.append(Left(int(j)))
 
@@ -191,4 +191,3 @@ parsed_commands = parse(program)
 tape = "01001"
 
 machine = PostMachine(tape, parsed_commands)
-machine.run()
