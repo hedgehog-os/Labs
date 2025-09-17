@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ndelete_0',['ndelete',['../classMultiset_1_1Multiset.html#adb9318f39a4f8f691ea4bcc9d33cf041',1,'Multiset::Multiset']]]
+  ['main_0',['main',['../namespaceMultiset__Interface.html#a7cf274682ea3fa445de2487a20d76a24',1,'Multiset_Interface.main()'],['../namespacePost__Machine__Interface.html#a3bca3993264296c98657a4de06e28710',1,'Post_Machine_Interface.main()']]]
 ];

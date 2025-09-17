@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['parse_0',['parse',['../namespacePost__Machine.html#aafd89c9ec820abfcd924c1774424810d',1,'Post_Machine']]]
+  ['ndelete_0',['ndelete',['../classMultiset_1_1Multiset.html#adb9318f39a4f8f691ea4bcc9d33cf041',1,'Multiset::Multiset']]]
 ];

@@ -1,6 +1,6 @@
 PROJECT_NAME           = "Multiset and PostMachine"
 OUTPUT_DIRECTORY       = documentation
-INPUT                  = Multiset.py Post_Machine.py
+INPUT                  = Multiset.py Post_Machine.py Multiset_Interface.py Post_Machine_Interface.py test_Post_Machine.py test_Multiset.py
 FILE_PATTERNS          = *.py
 RECURSIVE              = YES
 
