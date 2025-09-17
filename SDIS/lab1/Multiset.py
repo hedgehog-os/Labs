@@ -312,6 +312,3 @@ class Multiset:
 
         backtrack(0, {})
         return result
-
-
-str =  '{a, v,  {d, k, k, {}}, v, v, {d}}'

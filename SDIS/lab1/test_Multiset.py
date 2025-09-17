@@ -154,3 +154,67 @@ def test_is_empty_and_bolean():
     ms2 = Multiset('{x, x}')
     subsets = ms2.bolean()
     assert any(isinstance(sub, Multiset) for sub in subsets)
+
+def test_init_from_dict():
+    m = Multiset({'x': 2, 'y': 1})
+    assert m.cardinality() == 3
+    assert m.multiset['x'] == 2
+    assert 'y' in m
+
+def test_repr_contains_hash_with_nested():
+    inner = Multiset('{a}')
+    outer = Multiset('{b, {a}}')
+    assert repr(outer).startswith("Multiset(")
+    assert inner in outer
+    assert isinstance(hash(inner), int)
+
+def test_eq_with_different_nested_structure():
+    m1 = Multiset('{a, {b}}')
+    m2 = Multiset('{a, {b, b}}')
+    assert m1 != m2
+
+def test_contains_with_none_and_int():
+    m = Multiset('{a, b}')
+    m.to_multiset(None)
+    m.to_multiset(42)
+    assert None in m
+    assert 42 in m
+    assert m.cardinality() == 4
+
+def test_delete_nonexistent_element():
+    m = Multiset('{x, y}')
+    m.delete('z')  # Should not raise
+    assert m.cardinality() == 2
+
+def test_ndelete_more_than_exists():
+    m = Multiset('{x}')
+    m.ndelete('x', 5)
+    assert m.is_empty()
+
+def test_bolean_with_three_elements():
+    m = Multiset('{a, b, c}')
+    result = m.bolean()
+    assert len(result) == 8  # 2^3 subsets
+    assert Multiset('{a, b, c}') in result
+    assert Multiset('{}') in result
+
+def test_nested_multiset_equality_and_hash():
+    m1 = Multiset('{{a, b}}')
+    m2 = Multiset('{{a, b}}')
+    assert m1 == m2
+    assert hash(m1) == hash(m2)
+
+def test_cardinality_with_mixed_types():
+    m = Multiset('{}')
+    m.to_multiset('x')
+    m.to_multiset(1)
+    m.to_multiset(Multiset('{y}'))
+    assert m.cardinality() == 3
+
+def test_repr_with_mixed_elements():
+    m = Multiset('{}')
+    m.to_multiset('x')
+    m.to_multiset(Multiset('{y}'))
+    r = repr(m)
+    assert "Multiset(" in r
+    assert "'x'" in r or "x" in r 
