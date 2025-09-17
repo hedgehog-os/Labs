@@ -1,6 +1,32 @@
 from Multiset import Multiset
 
 def main():
+    """
+    @brief Interactive REPL interface for manipulating Multiset objects.
+    @details Allows users to define named multisets, perform operations on them, and inspect their state.
+             Supports union, intersection, subtraction, cardinality, boolean construction, and element deletion.
+
+    @command A = {a, b, {c, d}, a}   Defines a new multiset named A with specified elements.
+    @command list                    Lists all defined multisets and their contents.
+    @command show A                 Displays the contents of multiset A.
+    @command delete A a             Removes all instances of element 'a' from multiset A.
+    @command ndelete A a:2          Removes 2 instances of element 'a' from multiset A.
+    @command isempty A              Checks whether multiset A is empty.
+    @command cardinality A          Returns the total number of elements in multiset A.
+    @command rm A                   Deletes multiset A entirely.
+    @command A + B                  Displays the union of multisets A and B.
+    @command A += B                 Updates multiset A with the union of A and B.
+    @command A - B                  Displays the subtraction of B from A.
+    @command A -= B                 Updates multiset A by subtracting B.
+    @command A * B                  Displays the intersection of multisets A and B.
+    @command A *= B                 Updates multiset A with its intersection with B.
+    @command bolean A               Constructs and displays all possible subsets of multiset A.
+    @command help                   Displays all available commands and formats.
+    @command exit                   Terminates the program.
+
+    @return None
+    """
+
     multisets = {}
     
     print('''

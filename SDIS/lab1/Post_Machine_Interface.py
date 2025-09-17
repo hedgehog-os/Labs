@@ -1,6 +1,34 @@
 from Post_Machine import PostMachine, Command, Jump, Right, Left, Stop, Clear, Mark
 from Post_Machine import parse
 def main():
+    """
+    @brief Interactive command-line interface for the Post Machine.
+    @details Provides a REPL for building, modifying, and executing Post Machine programs.
+             Users can manage tape contents, add or delete commands, execute steps, and inspect machine state.
+
+    @command run                 Executes the full program until a Stop command is reached.
+    @command step                Executes a single command at the current index.
+    @command reset               Resets the machine to its initial tape and program.
+    @command add <command>       Adds a new command to the program (e.g., 'V 2', '? 1; 3').
+    @command tape                Displays the current tape.
+    @command tape <tape>         Sets a new tape (e.g., '01001').
+    @command program             Lists all commands in the current program.
+    @command show                Displays full machine state: tape, head, index, stopped flag, and program.
+    @command rm program          Clears all commands from the program.
+    @command delete <n>          Deletes the command at index n.
+    @command help                Displays available commands and formats.
+    @command exit                Exits the interface.
+
+    @format V <n>          Marks the current cell (sets to 1) and jumps to command n.
+    @format X <n>          Clears the current cell (sets to 0) and jumps to command n.
+    @format → <n> or r <n> Moves the head right and jumps to command n.
+    @format ← <n> or l <n> Moves the head left and jumps to command n.
+    @format ? <n1>; <n2>   If current cell is 0, jumps to n1; if 1, jumps to n2.
+    @format !              Stops the program.
+    
+    @return None
+    """
+    
     machine = None
     program = []
     tape = ''
