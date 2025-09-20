@@ -1,5 +1,7 @@
-from Post_Machine import PostMachine, Command, Jump, Right, Left, Stop, Clear, Mark
-from Post_Machine import parse
+from Post_Machine import PostMachine
+from parser import parse
+from Commands import Clear, Mark, Jump, Left,  Right, Stop
+
 def main():
     """
     @brief Interactive command-line interface for the Post Machine.

@@ -33,14 +33,12 @@ class Multiset:
                     self.to_multiset(elem)
             return
 
-        # Вспомогательные переменные для парсинга строки
         depth = 0 
         elem = ''
         subset = ''
 
         for sym in s[1:-1]:
 
-            # Если встречаестя подмножество, то сохраняем в переменную и добавляем в словарь
             if sym == '{':
                 depth += 1
                 if depth == 1:
@@ -49,7 +47,6 @@ class Multiset:
                     subset += sym
                 continue
 
-            # Сохраняем подмножество в словарь
             if sym == '}':
                 depth -= 1
                 if depth == 0:
@@ -63,7 +60,6 @@ class Multiset:
                 subset += sym
                 continue
 
-            # Обрабоотка атомарных элементов
             if sym == ',':
                 if elem.strip():
                     self.to_multiset(elem.strip())
@@ -71,11 +67,9 @@ class Multiset:
             elif sym != ' ':
                 elem += sym
 
-        # Если остался последний элемент, до добавляем в словарь
         if elem.strip():
             self.to_multiset(elem.strip())
     
-    # Кравсивый вывод мультимножесвта в консоль
     def __repr__(self):
         """
         @brief Возвращает строковое представление мультимножества.
@@ -85,7 +79,6 @@ class Multiset:
 
         return f"Multiset({self.multiset})"
 
-    # Для сравнения объектов
     def __eq__(self, other):
         """
         @brief Проверка на равенство двух мультимножеств.
@@ -106,7 +99,6 @@ class Multiset:
         """
         ...
 
-        # Преобразуем словарь в кортеж для хэширования
         return hash(frozenset(self.multiset.items()))
 
     # Проверка на наличие элементов в множестве
