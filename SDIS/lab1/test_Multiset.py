@@ -218,3 +218,60 @@ def test_repr_with_mixed_elements():
     r = repr(m)
     assert "Multiset(" in r
     assert "'x'" in r or "x" in r 
+
+def test_hash_consistency_with_order():
+    m1 = Multiset('{a, b, a}')
+    m2 = Multiset('{b, a, a}')
+    assert hash(m1) == hash(m2)
+
+def test_eq_with_non_multiset_type():
+    m = Multiset('{x}')
+    assert m != {'x': 1}
+    assert m != "Multiset({x})"
+    assert m != 42
+
+def test_repr_nested_structure():
+    m = Multiset('{a, {b, c}}')
+    r = repr(m)
+    assert "Multiset(" in r
+    assert "b" in r and "c" in r
+
+def test_subtraction_full_removal():
+    m1 = Multiset('{x, x}')
+    m2 = Multiset('{x, x}')
+    result = m1 - m2
+    assert result.is_empty()
+    m1 -= m2
+    assert m1.is_empty()
+
+def test_intersection_no_common_elements():
+    m1 = Multiset('{a, b}')
+    m2 = Multiset('{c, d}')
+    result = m1 * m2
+    assert result.is_empty()
+    m1 *= m2
+    assert m1.is_empty()
+
+def test_is_empty_with_nested_empty_sets():
+    m = Multiset('{{}, {}, {}}')
+    assert not m.is_empty()
+
+def test_ndelete_nonexistent_element():
+    m = Multiset('{a, b}')
+    m.ndelete('z', 3)
+    assert m.cardinality() == 2
+
+def test_delete_nonexistent_element_safe():
+    m = Multiset('{x}')
+    m.delete('y')
+    assert 'x' in m
+
+def test_cardinality_with_nested_sets():
+    m = Multiset('{a, {b, b}, {c}}')
+    assert m.cardinality() == 3
+
+def test_bolean_empty():
+    m = Multiset('{}')
+    result = m.bolean()
+    assert len(result) == 1
+    assert result[0].is_empty()

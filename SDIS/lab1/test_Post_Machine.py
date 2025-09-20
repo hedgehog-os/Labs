@@ -1,6 +1,8 @@
 import pytest
-from Post_Machine import PostMachine, parse
+from Post_Machine import PostMachine
 from Commands import Mark, Clear, Right, Left, Jump, Stop
+from parser import parse
+
 def test_mark_and_clear():
     tape = "000"
     commands = [Mark(1), Clear(2), Stop()]
