@@ -10,12 +10,6 @@ class Document:
         'confidential', 'secret', 'top_secret'
     }
 
-    formats = {
-        'pdf', 'docx', 'txt', 'md','html',
-        'xlsx', 'csv', 'json', 'xml',
-        'latex', 'py', 'cpp'
-    }
-
     def __init__(path: str,
                  self, id: int,
                  author_id: int,
@@ -27,9 +21,7 @@ class Document:
                  tags :str = None,
                  keywords: str = None,
                  language: str = None,
-                 format: str = None,
                  word_count: int = None,
-                 file_size: int = None,
                  confidentiality_level: str = 'public',
                  status: str = 'draft',
                  ):
@@ -45,10 +37,8 @@ class Document:
         self.keywords = keywords or []
         self.confidentiality_level = confidentiality_level
         self.language = language
-        self.format = format
         self.page_count = page_count
         self.word_count = word_count
-        self.file_size = file_size
         self.path = path
 
     @property
@@ -70,13 +60,3 @@ class Document:
         if value not in self.confidentiality_levels:
             raise ValueError(f'Недопустимый уровень конфиденциальности: {value}')
         self._confidentality_level = value
-
-    @property
-    def format(self):
-        return self._format
-
-    @format.setter
-    def format(self, value):
-        if value not in self.formats:
-            raise ValueError(f'Недопустимый уровень конфиденциальности: {value}')
-        self.format = value
