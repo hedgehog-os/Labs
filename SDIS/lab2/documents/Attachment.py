@@ -15,7 +15,11 @@ class Attachment:
                  checksum: str = None,
                  linked_documents: list[str] = None,
                  ):
-        pass
+        self.file_size = file_size
+        self.file_path = file_path
+        self.format = format
+        self.checksum = checksum
+        self.linked_documents = linked_documents
 
     @property
     def format(self):
