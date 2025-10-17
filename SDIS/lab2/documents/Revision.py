@@ -2,14 +2,45 @@ from datetime import datetime
 
 class Revision:
 
-    def __init__(self, revision_number: int = 1,
+    def __init__(self, path: str,
+                 id: int,
+                 author_id: int,
+                 page_count: int,
+                 revision_number: int = 1,
                  version_hash: str = None,
                  change_history: str = None,
                  editors_notes: str = None,
                  restore_status: str = None,
-                 restore_date: datetime = None
+                 restore_date: datetime = None,
+                 title: str = None,
+                 desc: str = None,
+                 created_at: datetime = None, 
+                 updated_at: datetime = None,
+                 tags :str = None,
+                 keywords: str = None,
+                 language: str = None,
+                 word_count: int = None,
+                 confidentiality_level: str = 'public',
+                 status: str = 'draft'
                  ):
         
+        super().__init__(
+                 id=id,
+                 author_id=author_id,
+                 page_count=page_count,
+                 path=path,
+                 title=title,
+                 desc=desc,
+                 created_at=created_at, 
+                 updated_at=updated_at,
+                 tags=tags,
+                 keywords=keywords,
+                 language=language,
+                 word_count=word_count,
+                 confidentiality_level=confidentiality_level,
+                 status=status
+                 )
+
         self.revsion_number = revision_number
         self.version_hash = version_hash
         self.change_history = change_history  

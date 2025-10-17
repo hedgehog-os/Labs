@@ -24,7 +24,7 @@ class Document:
                  language: str = None,
                  word_count: int = None,
                  confidentiality_level: str = 'public',
-                 status: str = 'draft',
+                 status: str = 'draft'
                  ):
         
         self.document_id = id
