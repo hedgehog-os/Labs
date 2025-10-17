@@ -1,3 +1,4 @@
+from datetime import datetime
 class Document:
     
     statuses = {
@@ -16,8 +17,8 @@ class Document:
                  page_count: int,
                  title: str = None,
                  desc: str = None,
-                 created_at: str = None, 
-                 updated_at: str = None,
+                 created_at: datetime = None, 
+                 updated_at: datetime = None,
                  tags :str = None,
                  keywords: str = None,
                  language: str = None,

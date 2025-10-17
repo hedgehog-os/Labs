@@ -1,9 +1,11 @@
+from datetime import datetime
+
 class ExperimentLog:
 
     def __init__(self, experiment_id: int,
-                 start_time: str,
-                 end_time: str,
-                 duration: str,
+                 start_time: datetime,
+                 end_time: datetime,
+                 duration: int,
                  raw_data_file: list[str],
                  lab_room: int = None,
                  data_points: list[str] = None,

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from typing import Any
 
 class Form:
@@ -5,7 +7,7 @@ class Form:
     def __init__(self, form_id: int,
                  fields: dict[str, Any] = None,
                  submitted_by: str = None,
-                 submitted_at: str = None,
+                 submitted_at: datetime = None,
                  is_final: bool = False
                  ):
         

@@ -1,9 +1,11 @@
+from datetime import datetime
+
 class Protocol:
 
     def __init__(self, procedure_steps: list[str] = None,
                  safety_protocol: str = None,
-                 approval_date: str = None,
-                 expiration_date: str = None,
+                 approval_date: datetime = None,
+                 expiration_date: datetime = None,
                  linked_experiment_ids: list[int] = None
                  ):
         

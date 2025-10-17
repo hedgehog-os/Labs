@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Report:
     
     chart_types = {
@@ -11,7 +13,7 @@ class Report:
                  reviewer_comments: list[str] = None,
                  reviewer_rating: str = None,
                  reviewer_text: str = None,
-                 review_date: str = None,
+                 review_date: datetime = None,
                  chart_type: str = None,
                  chart_date: dict = None,
                  insight_summary: str = None
