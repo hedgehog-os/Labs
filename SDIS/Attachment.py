@@ -44,3 +44,16 @@ class Attachment:
             return sha256.hexdigest()
         except FileNotFoundError:
             return None
+        
+    def verify_checksum(self):
+        """Проверяет, совпадает ли текущий хэш с сохранённым"""
+        current_checksum = self.calculate_checksum()
+        if current_checksum is None:
+            print("Файл не найден.")
+            return False
+        if current_checksum == self.checksum:
+            print("Файл не изменён. Контрольная сумма совпадает.")
+            return True
+        else:
+            print("Файл был изменён! Контрольная сумма не совпадает.")
+            return False
