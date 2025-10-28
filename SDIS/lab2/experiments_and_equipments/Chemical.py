@@ -1,20 +1,16 @@
+from typing import List, Optional
+from experiments_and_equipments.Reaction import Reaction
 class Chemical:
-    
-    hazard_levels = {
-        'low', 'medium', 'high'
-    }
-    
-    def __init__(self, name: str, formula: str, hazard_level: str) -> None:
+    def __init__(self,
+                 chemical_id: int,
+                 name: str,
+                 formula: str,
+                 concentration_molar: Optional[float] = None,
+                 reactions: Optional[List["Reaction"]] = None) -> None:
+        self.chemical_id: int = chemical_id
         self.name: str = name
         self.formula: str = formula
-        self.hazard_level: str = hazard_level
+        self.concentration_molar: Optional[float] = concentration_molar
 
-    @property
-    def hazard_level(self):
-        return self._role
-
-    @hazard_level.setter
-    def hazard_level(self, value):
-        if value not in self.hazard_levels:
-            raise ValueError(f'Недопустимый статус: {value}')
-        self._role = value
+        # Ассоциация
+        self.reactions: List["Reaction"] = reactions or []

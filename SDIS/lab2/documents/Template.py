@@ -1,48 +1,29 @@
-from datetime import datetime
-
+from typing import List, Optional
+from Document import Document
 class Template:
 
-    document_types = {
-        'Document', 'Report', 'Protocol', 'CheckList',
-        'ExperimentLog', 'Form', 'Revision'
+    formats = {
+        'md', 'xml', 'json'
     }
 
     def __init__(self,
-                 path: str,
-                 id: int,
-                 author_id: int,
-                 document_type = None,
-                 default_fields: list[str] = None,
-                 is_draft: bool = True,
-                 title: str = None,
-                 desc: str = None,
-                 created_at: datetime = None, 
-                 updated_at: datetime = None,
-                 tags :str = None,
-                 ):
-        
-        super().__init__(
-                 id=id,
-                 author_id=author_id,
-                 path=path,
-                 title=title,
-                 desc=desc,
-                 created_at=created_at, 
-                 updated_at=updated_at,
-                 tags=tags,
-                 )
+                 template_id: int,
+                 name: str,
+                 content_structure: str,
+                 applicable_documents: Optional[List["Document"]] = None) -> None:
+        self.template_id: int = template_id
+        self.name: str = name
+        self.content_structure: str = content_structure
 
-        self.document_type = document_type
-        self.default_fields = default_fields
-        self.is_draft = is_draft
+        # Ассоциация
+        self.applicable_documents: Optional[List["Document"]] = applicable_documents
 
     @property
-    def document_type(self):
-        return self._document_type
+    def format(self):
+        return self._format
 
-    @document_type.setter
-    def document_type(self, value):
-        if value not in self.document_types:
-            raise ValueError(f'Недопустимый статус: {value}')
-        self._document_type = value
-
+    @format.setter
+    def format(self, value):
+        if value not in self.formats:
+            raise ValueError(f'Недопустимый формат: {value}')
+        self.format = value

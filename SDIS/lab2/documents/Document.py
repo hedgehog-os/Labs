@@ -1,46 +1,45 @@
 from datetime import datetime
+from typing import List, Optional
+from metadata_and_analitics.Metadata import Metadata
+from Attachment import Attachment
+from Revision import Revision
+from Template import Template
+from metadata_and_analitics.Comment import Comment
+from metadata_and_analitics.Keyword import Keyword
+
 class Document:
-    
+
     statuses = {
-        'draft', 'submitted', 'under_review', 'approved',
-        'rejected', 'archived', 'final', 'expired', 'deleted'
+        'draft', 'final', 'archived'
     }
 
-    confidentiality_levels = {
-        'public', 'internal', 'restricted', 
-        'confidential', 'secret', 'top_secret'
-    }
-
-    def __init__(path: str,
-                 self, id: int,
+    def __init__(self,
+                 document_id: int,
+                 title: str,
                  author_id: int,
-                 page_count: int,
-                 title: str = None,
-                 desc: str = None,
-                 created_at: datetime = None, 
-                 updated_at: datetime = None,
-                 tags :str = None,
-                 keywords: str = None,
-                 language: str = None,
-                 word_count: int = None,
-                 confidentiality_level: str = 'public',
-                 status: str = 'draft'
-                 ):
-        
-        self.document_id = id
-        self.title = title
-        self.description = desc
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.author_id = author_id
-        self.status = status
-        self.tags = tags or []
-        self.keywords = keywords or []
-        self.confidentiality_level = confidentiality_level
-        self.language = language
-        self.page_count = page_count
-        self.word_count = word_count
-        self.path = path
+                 created_at: Optional[datetime] = None,
+                 tags: Optional[List[str]] = None,
+                 status: str = "draft",
+                 metadata: Optional["Metadata"] = None,
+                 attachments: Optional[List["Attachment"]] = None,
+                 revisions: Optional[List["Revision"]] = None,
+                 comments: Optional[List["Comment"]] = None,
+                 template: Optional["Template"] = None,
+                 keywords: Optional[List["Keyword"]] = None) -> None:
+        self.document_id: int = document_id
+        self.title: str = title
+        self.author_id: int = author_id
+        self.created_at: datetime = created_at or datetime.now()
+        self.tags: List[str] = tags or []
+        self.status: str = status
+
+        # Ассоциации
+        self.metadata: Optional["Metadata"] = metadata
+        self.attachments: List["Attachment"] = attachments or []
+        self.revisions: List["Revision"] = revisions or []
+        self.comments: List["Comment"] = comments or []
+        self.template: Optional["Template"] = template
+        self.keywords: Optional[List["Keyword"]] = keywords
 
     @property
     def status(self):
@@ -51,13 +50,3 @@ class Document:
         if value not in self.statuses:
             raise ValueError(f'Недопустимый статус: {value}')
         self._status = value
-
-    @property
-    def confidentiality_level(self):
-        return self._confidential_level
-
-    @confidentiality_level.setter
-    def confidentility_level(self, value):
-        if value not in self.confidentiality_levels:
-            raise ValueError(f'Недопустимый уровень конфиденциальности: {value}')
-        self._confidentality_level = value

@@ -1,7 +1,9 @@
 class Chart:
 
     chart_types = {
-        'bar', 'line', 'pie', 'scatter'
+        'bar', 'line', 'pie', 'scatter',
+        'histogram', 'area', 'bubble',
+        'heatmap', 'radar', 'boxplot'
     }
 
     def __init__(self, chart_id: int, title: str, chart_type: str, data: dict) -> None:

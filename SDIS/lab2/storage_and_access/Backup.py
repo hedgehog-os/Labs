@@ -1,26 +1,21 @@
 from datetime import datetime
-from typing import List
+from typing import Optional
+from storage_and_access.Encryption import Encryption
+from experiments_and_equipments.StorageDevice import StorageDevice
 
 class Backup:
-
-    locations = {
-        'view', 'edit', 'download'
-    }
-
-    def __init__(self, backup_id: int, created_at: datetime, included_documents: List[int], location: str) -> None:
+    def __init__(self,
+                 backup_id: int,
+                 location: str,
+                 timestamp: Optional[datetime] = None,
+                 size_mb: Optional[float] = None,
+                 encrypted_with: Optional["Encryption"] = None,
+                 storage_device: Optional["StorageDevice"] = None) -> None:
         self.backup_id: int = backup_id
-        self.created_at: datetime = created_at
-        self.included_documents: List[int] = included_documents
         self.location: str = location
-    
-    @property
-    def location(self):
-        return self._location
+        self.timestamp: datetime = timestamp or datetime.now()
+        self.size_mb: Optional[float] = size_mb
 
-    @location.setter
-    def location(self, value):
-        if value not in self.locations:
-            raise ValueError(f'Недопустимый статус: {value}')
-        self._location = value
-
-    
+        # Ассоциации
+        self.encrypted_with: Optional["Encryption"] = encrypted_with
+        self.storage_device: Optional["StorageDevice"] = storage_device
