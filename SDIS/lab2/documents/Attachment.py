@@ -37,3 +37,38 @@ class Attachment:
         if value not in self.formats:
             raise ValueError(f'Недопустимый формат: {value}')
         self.format = value
+
+    def upload_file(self, document: "Document") -> None:
+        """Привязать вложение к документу и добавить его в список attachments."""
+        self.document = document
+        document.attachments.append(self)
+
+    def link_to_document(self, document: "Document") -> None:
+        """Привязать вложение к документу без добавления в список attachments."""
+        self.document = document
+
+    def is_valid_format(self) -> bool:
+        """Проверяет, допустим ли формат файла."""
+        return self.format in self.formats
+
+    def rename_file(self, new_name: str) -> None:
+        """Переименовывает файл вложения."""
+        if not new_name or not isinstance(new_name, str):
+            raise ValueError("Недопустимое имя файла.")
+        self.filename = new_name
+
+    def get_file_extension(self) -> str:
+        """Возвращает расширение файла по имени."""
+        if '.' in self.filename:
+            return self.filename.split('.')[-1].lower()
+        return ""
+
+    def is_linked_to_document(self) -> bool:
+        """Проверяет, связано ли вложение с каким-либо документом."""
+        return self.document is not None
+
+    def unlink_document(self) -> None:
+        """Удаляет связь с документом, если она есть."""
+        if self.document and self in self.document.attachments:
+            self.document.attachments.remove(self)
+        self.document = None
