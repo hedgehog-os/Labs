@@ -6,7 +6,9 @@ from Revision import Revision
 from Template import Template
 from metadata_and_analitics.Comment import Comment
 from metadata_and_analitics.Keyword import Keyword
-
+from Form import Form
+from Protocol import Protocol
+from Report import Report
 class Document:
 
     statuses = {
@@ -25,7 +27,10 @@ class Document:
                  revisions: Optional[List["Revision"]] = None,
                  comments: Optional[List["Comment"]] = None,
                  template: Optional["Template"] = None,
-                 keywords: Optional[List["Keyword"]] = None) -> None:
+                 keywords: Optional[List["Keyword"]] = None,
+                 form: "Form" = None,
+                 protocol: "Protocol" = None,
+                 report: "Report" = None) -> None:
         self.document_id: int = document_id
         self.title: str = title
         self.author_id: int = author_id
@@ -40,6 +45,9 @@ class Document:
         self.comments: List["Comment"] = comments or []
         self.template: Optional["Template"] = template
         self.keywords: Optional[List["Keyword"]] = keywords
+        self.form: "Form" = form
+        self.protocol: "Protocol" = protocol
+        self.report: "Report" = report
 
     @property
     def status(self):
@@ -112,3 +120,84 @@ class Document:
         if self.metadata and self.metadata.is_encrypted:
             self.metadata.is_encrypted = False
             self.metadata.encryption_method = None
+
+    def is_ready_for_submission(self) -> bool:
+        """Проверяет, готов ли документ к отправке."""
+        has_metadata = self.metadata is not None
+        has_template = self.template is not None
+        has_content = bool(self.revisions)
+        return has_metadata and has_template and has_content and self.status == "draft"
+
+    def export_as_text(self) -> str:
+        """Возвращает текстовое представление документа."""
+        lines = [
+            f"Документ: {self.title}",
+            f"Автор ID: {self.author_id}",
+            f"Статус: {self.status}",
+            f"Создан: {self.created_at.strftime('%Y-%m-%d %H:%M')}",
+            f"Теги: {', '.join(self.tags) if self.tags else '—'}",
+            f"Ключевые слова: {self.get_keywords_as_text()}",
+            f"Шаблон: {self.template.name if self.template else '—'}",
+            f"Ревизий: {len(self.revisions)}",
+            f"Вложений: {len(self.attachments)}",
+            f"Комментариев: {len(self.comments)}"
+        ]
+        return "\n".join(lines)
+
+    def get_attachment_formats(self) -> dict[str, int]:
+        """Возвращает количество вложений по формату."""
+        format_count: dict[str, int] = {}
+        for attachment in self.attachments:
+            ext = attachment.get_file_extension()
+            format_count[ext] = format_count.get(ext, 0) + 1
+        return format_count
+
+    def find_comments_containing(self, keyword: str) -> List[str]:
+        """Возвращает комментарии, содержащие заданное слово."""
+        return [c.content for c in self.comments if keyword.lower() in c.content.lower()]
+
+    def summarize_revisions(self) -> str:
+        """Возвращает краткую сводку по всем ревизиям."""
+        if not self.revisions:
+            return "Ревизий нет."
+        return "\n".join([r.get_revision_info() for r in self.revisions])
+
+    def link_form(self, form: "Form") -> None:
+        """Привязывает форму к документу, если ID совпадают."""
+        if form.form_id == self.document_id:
+            form.title = self.title
+            form.author_id = self.author_id
+
+    def validate_against_protocol(self, protocol: "Protocol") -> bool:
+        """Проверяет, соответствует ли документ шагам протокола."""
+        if not protocol.steps:
+            return False
+        return any(tag.lower() in step.lower() for step in protocol.steps for tag in self.tags)
+
+    def contribute_to_report(self, report: "Report") -> None:
+        """Добавляет документ как источник в отчёт, если автор совпадает."""
+        if report.author_id == self.author_id:
+            comment_text = f"Документ '{self.title}' включён в отчёт '{report.title}'."
+            report.comments.append(Comment(
+                comment_id=len(report.comments) + 1,
+                document_id=self.document_id,
+                user_id=self.author_id,
+                content=comment_text,
+                posted_at=datetime.now()
+            ))
+
+    def generate_document_summary(self) -> str:
+        """Формирует краткий отчёт по документу."""
+        lines = [
+            f"Документ: {self.title}",
+            f"Статус: {self.status}",
+            f"Автор: {self.author_id}",
+            f"Создан: {self.created_at.strftime('%Y-%m-%d %H:%M')}",
+            f"Ключевые слова: {self.get_keywords_as_text()}",
+            f"Ревизий: {len(self.revisions)}",
+            f"Комментариев: {len(self.comments)}",
+            f"Вложений: {len(self.attachments)}",
+            f"Шаблон: {self.template.name if self.template else '—'}",
+            f"Метаданные: {'есть' if self.metadata else 'нет'}"
+        ]
+        return "\n".join(lines)

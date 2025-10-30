@@ -1,19 +1,13 @@
-from Person import Person
+from typing import List
 from documents.Document import Document
 
-class Supervisor(Person):
-
-    def __init__(self, student_id: int,
+class Supervisor:
+    def __init__(self,
+                 supervisor_id: int,
                  fullname: str,
                  email: str,
-                 reviewed_documents: list[Document],
-                 supervisor_id: int
-                 ):
-        
-        super().__init__(id=student_id,
-                         fullname=fullname,
-                         email=email
-                         )
-        
-        self.reviewed_documents  = reviewed_documents
-        self.supervisor_id = supervisor_id
+                 reviewed_documents: List[Document]) -> None:
+        self.supervisor_id: int = supervisor_id
+        self.fullname: str = fullname
+        self.email: str = email
+        self.reviewed_documents: List[Document] = reviewed_documents

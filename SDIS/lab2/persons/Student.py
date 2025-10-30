@@ -1,21 +1,22 @@
-from Person import Person
 from datetime import datetime
-
-class Student(Person):
-
-    def __init__(self, student_id: int,
+from typing import List, Dict
+from persons.UserProfile import UserProfile
+from typing import Optional
+class Student:
+    def __init__(self,
+                 student_id: int,
                  fullname: str,
                  email: str,
                  department: str,
-                 assigned_documents: list = None,
-                 activity_log: dict[str, datetime] = None
-                 ):
-        
-        super().__init__(id=student_id,
-                         fullname=fullname,
-                         email=email
-                         )
-        
-        self.department = department
-        self.assigned_documents = assigned_documents
-        self.activity_lof = activity_log
+                 assigned_documents: List[int] | None = None,
+                 activity_log: Dict[str, datetime] | None = None,
+                 profile: Optional["UserProfile"] = None) -> None:
+        self.student_id: int = student_id
+        self.fullname: str = fullname
+        self.email: str = email
+        self.department: str = department
+        self.assigned_documents: List[int] = assigned_documents or []
+        self.activity_log: Dict[str, datetime] = activity_log or {}
+
+        # Ассоциация
+        self.profile: Optional['UserProfile'] = profile

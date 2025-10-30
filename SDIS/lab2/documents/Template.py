@@ -1,5 +1,8 @@
 from typing import List, Optional
 from Document import Document
+from Attachment import Attachment
+from Revision import Revision
+
 class Template:
 
     formats = {
@@ -27,3 +30,50 @@ class Template:
         if value not in self.formats:
             raise ValueError(f'Недопустимый формат: {value}')
         self.format = value
+
+    def assign_template(self, template: "Template") -> None:
+        """Привязывает шаблон к документу и обновляет обратную связь."""
+        self.template = template
+        if template.applicable_documents is None:
+            template.applicable_documents = []
+        if self not in template.applicable_documents:
+            template.applicable_documents.append(self)
+
+    def remove_template(self) -> None:
+        """Удаляет связь с шаблоном."""
+        if self.template and self in self.template.applicable_documents:
+            self.template.applicable_documents.remove(self)
+        self.template = None
+
+    def add_attachment(self, attachment: "Attachment") -> None:
+        """Добавляет вложение к документу и устанавливает связь."""
+        self.attachments.append(attachment)
+        attachment.document = self
+
+    def remove_attachment(self, attachment: "Attachment") -> None:
+        """Удаляет вложение из документа и разрывает связь."""
+        if attachment in self.attachments:
+            self.attachments.remove(attachment)
+            attachment.document = None
+
+    def get_latest_revision(self) -> Optional["Revision"]:
+        """Возвращает последнюю ревизию документа."""
+        if not self.revisions:
+            return None
+        return max(self.revisions, key=lambda r: r.version_number)
+
+    def get_revision_history(self) -> List[str]:
+        """Возвращает краткую историю изменений всех ревизий."""
+        return [f"v{r.version_number}: {r.notes or '—'}" for r in self.revisions]
+
+    def get_comment_summary(self) -> str:
+        """Возвращает краткий обзор комментариев."""
+        if not self.comments:
+            return "Комментариев нет."
+        return "\n".join(f"- {c.content}" for c in self.comments)
+
+    def get_keywords_as_text(self) -> str:
+        """Возвращает ключевые слова в виде строки."""
+        if not self.keywords:
+            return "Нет ключевых слов."
+        return ", ".join(k.word for k in self.keywords)

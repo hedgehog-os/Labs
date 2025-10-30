@@ -16,3 +16,4 @@ class Reviewer:
         self.reviewed_drafts: List["Draft"] = reviewed_drafts or []
         self.comments: List[str] = comments or []
         self.last_reviewed_at: Optional[datetime] = last_reviewed_at
+
