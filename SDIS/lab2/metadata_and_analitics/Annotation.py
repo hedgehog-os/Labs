@@ -1,12 +1,18 @@
 from datetime import datetime
+from typing import Optional
 
 class Annotation:
-    def __init__(self, annotation_id: int, document_id: int, user_id: int, text: str, timestamp: datetime) -> None:
+    def __init__(self,
+                 annotation_id: int,
+                 document_id: int,
+                 user_id: int,
+                 text: str,
+                 timestamp: Optional[datetime] = None) -> None:
         self.annotation_id: int = annotation_id
         self.document_id: int = document_id
         self.user_id: int = user_id
         self.text: str = text
-        self.timestamp: datetime = timestamp
+        self.timestamp: datetime = timestamp or datetime.now()
 
     def edit_text(self, new_text: str) -> None:
         """Обновляет текст аннотации и фиксирует время изменения."""

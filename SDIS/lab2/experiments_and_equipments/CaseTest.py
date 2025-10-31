@@ -1,17 +1,20 @@
-from typing import List, Optional
-from Measurement import Measurement
-from experiments_and_equipments.Procedure import Procedure
 from datetime import datetime
-from experiments_and_equipments.Sensor import Sensor
+from typing import List, Optional, TYPE_CHECKING
 
-class TestCase:
+if TYPE_CHECKING:
+    from Measurement import Measurement
+    from experiments_and_equipments.Procedure import Procedure
+    from experiments_and_equipments.Sensor import Sensor
+
+
+class CaseTest:
     def __init__(self,
                  testcase_id: int,
                  name: str,
                  description: str,
                  created_at: Optional[datetime] = None,
                  procedure: Optional["Procedure"] = None,
-                 measurements: Optional[List[Measurement]] = None) -> None:
+                 measurements: Optional[List["Measurement"]] = None) -> None:
         self.testcase_id: int = testcase_id
         self.name: str = name
         self.description: str = description
@@ -19,32 +22,32 @@ class TestCase:
 
         # Ассоциация
         self.procedure: Optional["Procedure"] = procedure
-        self.measurements: Optional[List[Measurement]] = measurements
+        self.measurements: Optional[List["Measurement"]] = measurements
 
-    def add_measurement(self, measurement: Measurement) -> None:
+    def add_measurement(self, measurement: "Measurement") -> None:
         """Добавляет измерение к тест-кейсу."""
         if self.measurements is None:
             self.measurements = []
         self.measurements.append(measurement)
 
-    def remove_measurement(self, measurement: Measurement) -> None:
+    def remove_measurement(self, measurement: "Measurement") -> None:
         """Удаляет измерение из тест-кейса."""
         if self.measurements and measurement in self.measurements:
             self.measurements.remove(measurement)
 
-    def get_recent_measurements(self, minutes: int = 60) -> List[Measurement]:
+    def get_recent_measurements(self, minutes: int = 60) -> List["Measurement"]:
         """Возвращает измерения, сделанные за последние N минут."""
         if not self.measurements:
             return []
         return [m for m in self.measurements if m.is_recent(minutes)]
 
-    def get_measurements_by_unit(self, unit: str) -> List[Measurement]:
+    def get_measurements_by_unit(self, unit: str) -> List["Measurement"]:
         """Фильтрует измерения по единице измерения."""
         if not self.measurements:
             return []
         return [m for m in self.measurements if m.unit == unit]
 
-    def get_measurements_from_sensor(self, sensor: Sensor) -> List[Measurement]:
+    def get_measurements_from_sensor(self, sensor: "Sensor") -> List["Measurement"]:
         """Возвращает измерения, сделанные указанным сенсором."""
         if not self.measurements:
             return []

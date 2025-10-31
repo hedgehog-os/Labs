@@ -1,22 +1,25 @@
 from datetime import datetime, timedelta
-from typing import List, Optional
-from Procedure import Procedure
-from TestCase import TestCase
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Procedure import Procedure
+    from experiments_and_equipments.CaseTest import CaseTest
+
 
 class Experiment:
-    def __init__(self, experiment_id: int, title: str, procedure: Procedure, start_date: Optional[datetime] = None) -> None:
+    def __init__(self, experiment_id: int, title: str, procedure: "Procedure", start_date: Optional[datetime] = None) -> None:
         self.experiment_id: int = experiment_id
         self.title: str = title
         self.procedure: Procedure = procedure
         self.start_date: datetime = start_date or datetime.now()
-        self.test_cases: List[TestCase] = []
+        self.test_cases: List["CaseTest"] = []
 
-    def add_test_case(self, test_case: TestCase) -> None:
+    def add_test_case(self, test_case: "CaseTest") -> None:
         """Добавляет тест-кейс к эксперименту, если он ещё не включён."""
         if test_case not in self.test_cases:
             self.test_cases.append(test_case)
 
-    def remove_test_case(self, test_case: TestCase) -> None:
+    def remove_test_case(self, test_case: "CaseTest") -> None:
         """Удаляет тест-кейс из эксперимента."""
         if test_case in self.test_cases:
             self.test_cases.remove(test_case)
@@ -25,11 +28,11 @@ class Experiment:
         """Возвращает список ID всех тест-кейсов."""
         return [tc.testcase_id for tc in self.test_cases]
 
-    def get_completed_test_cases(self) -> List[TestCase]:
+    def get_completed_test_cases(self) -> List["CaseTest"]:
         """Возвращает список завершённых тест-кейсов."""
         return [tc for tc in self.test_cases if getattr(tc, "is_completed", False)]
 
-    def get_pending_test_cases(self) -> List[TestCase]:
+    def get_pending_test_cases(self) -> List["CaseTest"]:
         """Возвращает список незавершённых тест-кейсов."""
         return [tc for tc in self.test_cases if not getattr(tc, "is_completed", False)]
 

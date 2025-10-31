@@ -1,9 +1,13 @@
-from typing import List, Optional
-from documents.Document import Document
-from documents.Report import Report
-from storage_and_access.Archive import Archive
-from metadata_and_analitics.Comment import Comment
 from datetime import datetime
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from documents.Report import Report
+    from storage_and_access.Archive import Archive
+    from metadata_and_analitics.Comment import Comment
+    from Folder import Folder  # если используется в is_child_of
+
 
 class Folder:
     def __init__(self, folder_id: int, name: str, parent_id: Optional[int], document_ids: List[int]) -> None:
@@ -80,6 +84,7 @@ class Folder:
 
     def contribute_to_report(self, report: "Report") -> None:
         """Добавляет документы из папки в отчёт, если автор совпадает."""
+        from metadata_and_analitics.Comment import Comment  # локальный импорт
         for doc_id in self.document_ids:
             if report.author_id == doc_id:
                 report.comments.append(Comment(
@@ -89,6 +94,7 @@ class Folder:
                     content=f"Документ #{doc_id} из папки '{self.name}' включён в отчёт '{report.title}'.",
                     posted_at=datetime.now()
                 ))
+
 
     def export_summary(self, all_documents: List["Document"]) -> str:
         """Формирует текстовый отчёт по содержимому папки."""

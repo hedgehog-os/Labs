@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
-from typing import List, Dict
-from persons.UserProfile import UserProfile
-from typing import Optional
+from typing import List, Dict, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from persons.UserProfile import UserProfile
+
 class Student:
     def __init__(self,
                  student_id: int,

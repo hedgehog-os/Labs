@@ -1,22 +1,25 @@
-from typing import List, Optional
-from Device import Device
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.Device import Device
+
 
 class LabRoom:
-    def __init__(self, room_number: str, equipment: Optional[List[Device]] = None) -> None:
+    def __init__(self, room_number: str, equipment: Optional[List["Device"]] = None) -> None:
         self.room_number: str = room_number
-        self.equipment: List[Device] = equipment or []
+        self.equipment: List["Device"] = equipment or []
 
-    def add_device(self, device: Device) -> None:
+    def add_device(self, device: "Device") -> None:
         """Добавляет устройство в лабораторию, если оно ещё не включено."""
         if device not in self.equipment:
             self.equipment.append(device)
 
-    def remove_device(self, device: Device) -> None:
+    def remove_device(self, device: "Device") -> None:
         """Удаляет устройство из лаборатории."""
         if device in self.equipment:
             self.equipment.remove(device)
 
-    def has_device(self, device: Device) -> bool:
+    def has_device(self, device: "Device") -> bool:
         """Проверяет, находится ли устройство в лаборатории."""
         return device in self.equipment
 
@@ -24,11 +27,11 @@ class LabRoom:
         """Возвращает список ID всех устройств в лаборатории."""
         return [d.device_id for d in self.equipment]
 
-    def get_uncalibrated_devices(self) -> List[Device]:
+    def get_uncalibrated_devices(self) -> List["Device"]:
         """Возвращает список устройств без калибровки."""
         return [d for d in self.equipment if not d.is_calibrated()]
 
-    def get_recently_calibrated_devices(self, days: int = 30) -> List[Device]:
+    def get_recently_calibrated_devices(self, days: int = 30) -> List["Device"]:
         """Возвращает устройства, откалиброванные за последние N дней."""
         return [d for d in self.equipment if d.was_calibrated_recently(days)]
 

@@ -1,7 +1,10 @@
-from typing import List
-from documents.Report import Report
-import Comment
 from datetime import datetime
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Report import Report
+    from metadata_and_analitics.Comment import Comment
+
 
 class Insight:
     def __init__(self, insight_id: int, description: str, related_documents: List[int]) -> None:
@@ -54,6 +57,7 @@ class Insight:
     def attach_to_report(self, report: "Report") -> None:
         """Добавляет ID всех связанных документов в комментарий отчёта."""
         if self.related_documents:
+            from metadata_and_analitics.Comment import Comment  # локальный импорт
             comment_text = (
                 f"Инсайт #{self.insight_id} связан с документами: "
                 f"{', '.join(map(str, self.related_documents))}"
@@ -65,6 +69,8 @@ class Insight:
                 content=comment_text,
                 posted_at=datetime.now()
             ))
+
+
 
     def visualize_links(self) -> str:
         """Генерирует текстовую карту связей инсайта с документами."""

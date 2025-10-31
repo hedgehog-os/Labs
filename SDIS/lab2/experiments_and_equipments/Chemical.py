@@ -1,5 +1,8 @@
-from typing import List, Optional
-from experiments_and_equipments.Reaction import Reaction
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.Reaction import Reaction
+
 class Chemical:
     def __init__(self,
                  chemical_id: int,

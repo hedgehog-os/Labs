@@ -1,6 +1,10 @@
-from persons.UserProfile import UserProfile
-from documents.Document import Document
-from storage_and_access.AccessLog import AccessLog
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from persons.UserProfile import UserProfile
+    from documents.Document import Document
+    from storage_and_access.AccessLog import AccessLog
+
 
 class Permission:
     def __init__(self, user_id: int, document_id: int, can_view: bool, can_edit: bool, can_delete: bool) -> None:
@@ -96,4 +100,12 @@ class Permission:
             f"Права: {'Просмотр' if self.can_view else '—'} "
             f"{'Редактирование' if self.can_edit else '—'} "
             f"{'Удаление' if self.can_delete else '—'}"
+        )
+
+    def _is_action_allowed(self, action: str) -> bool:
+        """Проверяет, разрешено ли действие согласно текущим правам."""
+        return (
+            (action == "view" and self.can_view) or
+            (action == "edit" and self.can_edit) or
+            (action == "delete" and self.can_delete)
         )

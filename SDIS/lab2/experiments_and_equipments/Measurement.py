@@ -1,13 +1,16 @@
 from datetime import datetime
-from typing import Optional
-from Sensor import Sensor
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Sensor import Sensor
+
 
 class Measurement:
-    def __init__(self, value: float, unit: str, timestamp: Optional[datetime] = None, sensor: Optional[Sensor] = None) -> None:
+    def __init__(self, value: float, unit: str, timestamp: Optional[datetime] = None, sensor: Optional["Sensor"] = None) -> None:
         self.value: float = value
         self.unit: str = unit
         self.timestamp: datetime = timestamp or datetime.now()
-        self.sensor: Optional[Sensor] = sensor
+        self.sensor: Optional["Sensor"] = sensor
 
     def is_recent(self, threshold_minutes: int = 60) -> bool:
         """Проверяет, было ли измерение выполнено недавно."""
@@ -32,7 +35,7 @@ class Measurement:
             "sensor_id": self.sensor.sensor_id if self.sensor else None
         }
 
-    def is_from_sensor(self, sensor: Sensor) -> bool:
+    def is_from_sensor(self, sensor: "Sensor") -> bool:
         """Проверяет, связано ли измерение с указанным сенсором."""
         return self.sensor == sensor
 

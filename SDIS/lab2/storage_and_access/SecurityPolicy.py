@@ -1,6 +1,9 @@
-from typing import List
-from documents.Document import Document
-from Permission import Permission
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from Permission import Permission
+
 
 class SecurityPolicy:
     def __init__(self, policy_id: int, name: str, rules: List[str], enforced: bool) -> None:

@@ -1,7 +1,10 @@
-from typing import List
-from experiments_and_equipments.LabRoom import LabRoom
-from experiments_and_equipments.Experiment import Experiment
-from experiments_and_equipments.Device import Device
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.LabRoom import LabRoom
+    from experiments_and_equipments.Experiment import Experiment
+    from experiments_and_equipments.Device import Device
+
 
 class LabAssistant:
     def __init__(self,

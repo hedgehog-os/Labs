@@ -1,7 +1,12 @@
-from typing import List, Optional
-from Document import Document
-from Attachment import Attachment
-from Revision import Revision
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Document import Document
+    from Attachment import Attachment
+    from Revision import Revision
+    from metadata_and_analitics.Comment import Comment
+    from metadata_and_analitics.Keyword import Keyword  
+
 
 class Template:
 
@@ -20,6 +25,11 @@ class Template:
 
         # Ассоциация
         self.applicable_documents: Optional[List["Document"]] = applicable_documents
+        self.attachments: List["Attachment"] = []
+        self.revisions: List["Revision"] = []
+        self.comments: List["Comment"] = []
+        self.keywords: List["Keyword"] = []
+
 
     @property
     def format(self):
@@ -29,7 +39,7 @@ class Template:
     def format(self, value):
         if value not in self.formats:
             raise ValueError(f'Недопустимый формат: {value}')
-        self.format = value
+        self._format = value
 
     def assign_template(self, template: "Template") -> None:
         """Привязывает шаблон к документу и обновляет обратную связь."""

@@ -1,7 +1,13 @@
-from typing import List, Optional
-from documents.Document import Document
-import Metadata, Insight, Comment
-from documents.Report import Report
+from typing import List, Optional, TYPE_CHECKING
+from datetime import datetime
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from Metadata import Metadata
+    from Insight import Insight
+    from documents.Report import Report
+    from Comment import Comment
+
 class Tag:
 
     categories = {
@@ -103,7 +109,7 @@ class Tag:
 
     def annotate_report(self, report: "Report") -> None:
         """Добавляет комментарий в отчёт о применении тега."""
-        from datetime import datetime
+        from Comment import Comment  # локальный импорт
         comment_text = f"Тег '{self.name}' ({self.category or '—'}) применён к {len(self.applied_to)} документам."
         report.comments.append(Comment(
             comment_id=len(report.comments) + 1,
@@ -112,3 +118,4 @@ class Tag:
             content=comment_text,
             posted_at=datetime.now()
         ))
+

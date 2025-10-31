@@ -1,6 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
-from persons.ExternalExpert import ExternalExpert
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from persons.ExternalExpert import ExternalExpert  # только для type hints
+
 
 class ExperimentLog:
     def __init__(self,

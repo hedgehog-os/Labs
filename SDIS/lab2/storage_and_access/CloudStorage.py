@@ -1,5 +1,8 @@
-from storage_and_access.Backup import Backup
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from storage_and_access.Backup import Backup
+
 
 class CloudStorage:
     def __init__(self, provider: str, bucket_name: str, access_key: str) -> None:

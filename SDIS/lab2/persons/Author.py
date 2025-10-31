@@ -1,6 +1,12 @@
 from datetime import datetime
-from documents import Document, Revision, Report
-from metadata_and_analitics.Comment import Comment
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from documents.Revision import Revision
+    from documents.Report import Report
+    from metadata_and_analitics.Comment import Comment
+
 class Author:
     def __init__(self,
                  author_id: int,
@@ -69,7 +75,7 @@ class Author:
     
     def submit_report(self, report: "Report", content: str) -> None:
         """Добавляет комментарий в отчёт от имени автора."""
-        from datetime import datetime
+        from metadata_and_analitics.Comment import Comment
         report.comments.append(Comment(
             comment_id=len(report.comments) + 1,
             document_id=report.report_id,
@@ -80,7 +86,7 @@ class Author:
 
     def write_comment(self, target_id: int, content: str) -> "Comment":
         """Создаёт комментарий от имени автора к указанному объекту."""
-        from datetime import datetime
+        from metadata_and_analitics.Comment import Comment
         return Comment(
             comment_id=target_id * 1000 + self.author_id,
             document_id=target_id,
@@ -88,4 +94,5 @@ class Author:
             content=content,
             posted_at=datetime.now()
         )
+
 

@@ -1,7 +1,10 @@
-from storage_and_access.Backup import Backup
-from Folder import Folder
-from documents.Document import Document
-from typing import List
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from storage_and_access.Backup import Backup
+    from Folder import Folder
+    from documents.Document import Document
+
 
 class LocalStorage:
     def __init__(self, path: str, capacity_gb: float) -> None:

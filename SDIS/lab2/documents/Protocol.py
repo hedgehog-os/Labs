@@ -1,6 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
-from persons.Supervisor import Supervisor
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from persons.Supervisor import Supervisor
+
 class Protocol:
     def __init__(self,
                  protocol_id: int,

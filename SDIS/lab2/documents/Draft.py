@@ -1,6 +1,9 @@
 from datetime import datetime
-from typing import Optional, List
-from persons.Reviewer import Reviewer
+from typing import Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from persons.Reviewer import Reviewer
+
 class Draft:
     def __init__(self,
                  draft_id: int,

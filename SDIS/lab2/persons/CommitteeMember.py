@@ -1,6 +1,9 @@
-from documents.Report import Report
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Report import Report
+
 
 class CommitteeMember:
 

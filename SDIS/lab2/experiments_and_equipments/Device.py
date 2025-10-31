@@ -1,13 +1,16 @@
-from typing import Optional
-from Calibration import Calibration
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.Calibration import Calibration
+
 
 class Device:
-    def __init__(self, device_id: int, name: str, calibration: Optional[Calibration] = None) -> None:
+    def __init__(self, device_id: int, name: str, calibration: Optional["Calibration"] = None) -> None:
         self.device_id: int = device_id
         self.name: str = name
-        self.calibration: Optional[Calibration] = calibration
+        self.calibration: Optional["Calibration"] = calibration
 
-    def assign_calibration(self, calibration: Calibration) -> None:
+    def assign_calibration(self, calibration: "Calibration") -> None:
         """Привязывает калибровку к устройству."""
         self.calibration = calibration
 

@@ -1,10 +1,13 @@
-from Chemical import Chemical
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.Chemical import Chemical
+
 
 class Sample:
-    def __init__(self, sample_id: int, chemical: Chemical, volume_ml: float) -> None:
+    def __init__(self, sample_id: int, chemical: "Chemical", volume_ml: float) -> None:
         self.sample_id: int = sample_id
-        self.chemical: Chemical = chemical
+        self.chemical: "Chemical" = chemical
         self.volume_ml: float = volume_ml
 
     def get_concentration(self) -> Optional[float]:

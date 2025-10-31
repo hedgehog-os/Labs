@@ -1,15 +1,19 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
+
 from metadata_and_analitics.Metadata import Metadata
-from Attachment import Attachment
-from Revision import Revision
-from Template import Template
 from metadata_and_analitics.Comment import Comment
 from metadata_and_analitics.Keyword import Keyword
-from Form import Form
-from Protocol import Protocol
-from Report import Report
+from documents.Template import Template
 from Exceptions import DocumentNotReadyError, DocumentAlreadyArchivedError, DocumentRestoreError
+
+if TYPE_CHECKING:
+    from Attachment import Attachment
+    from Revision import Revision
+    from Form import Form
+    from Protocol import Protocol
+    from Report import Report
+
 class Document:
 
     statuses = {
@@ -40,7 +44,6 @@ class Document:
         self.status: str = status
 
         # Ассоциации
-        self.metadata: Optional["Metadata"] = metadata
         self.attachments: List["Attachment"] = attachments or []
         self.revisions: List["Revision"] = revisions or []
         self.comments: List["Comment"] = comments or []
@@ -49,6 +52,8 @@ class Document:
         self.form: "Form" = form
         self.protocol: "Protocol" = protocol
         self.report: "Report" = report
+        self.metadata: "Metadata" = metadata
+
 
     @property
     def status(self):
@@ -203,3 +208,8 @@ class Document:
             f"Метаданные: {'есть' if self.metadata else 'нет'}"
         ]
         return "\n".join(lines)
+
+    def get_keywords_as_text(self) -> str:
+        if not self.keywords:
+            return "—"
+        return ", ".join(k.word for k in self.keywords)

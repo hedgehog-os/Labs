@@ -1,15 +1,16 @@
-from Document import Document        
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Document import Document  # только для type hints
+
 
 class Attachment:
-
     formats = {
-        'pdf', 'docx', 'txt', 'md','html',
+        'pdf', 'docx', 'txt', 'md', 'html',
         'xlsx', 'csv', 'json', 'xml',
         'latex', 'py', 'cpp'
     }
-
 
     def __init__(self,
                  attachment_id: int,
@@ -23,10 +24,9 @@ class Attachment:
         self.filename: str = filename
         self.filetype: str = filetype
         self.uploaded_at: datetime = uploaded_at or datetime.now()
-        self.format: str = format
-
-        # Ассоциация
+        self.format = format
         self.document: Optional["Document"] = document
+
 
     @property
     def format(self):
@@ -36,16 +36,15 @@ class Attachment:
     def format(self, value):
         if value not in self.formats:
             raise ValueError(f'Недопустимый формат: {value}')
-        self.format = value
+        self._format = value
 
     def upload_file(self, document: "Document") -> None:
-        """Привязать вложение к документу и добавить его в список attachments."""
         self.document = document
         document.attachments.append(self)
 
     def link_to_document(self, document: "Document") -> None:
-        """Привязать вложение к документу без добавления в список attachments."""
         self.document = document
+
 
     def is_valid_format(self) -> bool:
         """Проверяет, допустим ли формат файла."""

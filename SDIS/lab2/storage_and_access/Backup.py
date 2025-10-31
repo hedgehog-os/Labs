@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
-from typing import Optional
-from storage_and_access.Encryption import Encryption
-from experiments_and_equipments.StorageDevice import StorageDevice
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from storage_and_access.Encryption import Encryption
+    from experiments_and_equipments.StorageDevice import StorageDevice
+
 
 class Backup:
     def __init__(self,

@@ -1,6 +1,13 @@
-from documents import Document, Report, Revision
-import Metadata, Comment
 from datetime import datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from documents.Report import Report
+    from documents.Revision import Revision
+    from Metadata import Metadata
+    from Comment import Comment
+
 
 class Statistics:
     def __init__(self, document_id: int, views: int, edits: int, comments: int) -> None:
@@ -73,6 +80,7 @@ class Statistics:
 
     def contribute_to_report(self, report: "Report") -> None:
         """Добавляет статистику в отчёт как текстовую сводку."""
+        from Comment import Comment  # локальный импорт
         summary = self.get_summary()
         report.comments.append(Comment(
             comment_id=len(report.comments) + 1,
@@ -81,6 +89,7 @@ class Statistics:
             content=f"Статистика документа:\n{summary}",
             posted_at=datetime.now()
         ))
+
     
     def compare_to(self, other: "Statistics") -> dict[str, int]:
         """Сравнивает текущую статистику с другой и возвращает разницу по каждому показателю."""
@@ -94,8 +103,8 @@ class Statistics:
         """Генерирует текстовую диаграмму активности."""
         return (
             f"Активность документа #{self.document_id}\n"
-            f"Просмотры: {'█' * min(self.views, 20)} ({self.views})\n"
-            f"Правки: {'█' * min(self.edits, 20)} ({self.edits})\n"
-            f"Комментарии: {'█' * min(self.comments, 20)} ({self.comments})"
+            f"Просмотры: {'|' * min(self.views, 20)} ({self.views})\n"
+            f"Правки: {'|' * min(self.edits, 20)} ({self.edits})\n"
+            f"Комментарии: {'|' * min(self.comments, 20)} ({self.comments})"
         )
 

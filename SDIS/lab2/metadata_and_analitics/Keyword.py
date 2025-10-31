@@ -1,5 +1,9 @@
-from documents.Document import Document
-import Insight
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from Insight import Insight
+
 
 class Keyword:
     def __init__(self, word: str, relevance_score: float) -> None:

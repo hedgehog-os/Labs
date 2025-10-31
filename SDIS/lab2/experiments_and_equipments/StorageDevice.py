@@ -1,5 +1,8 @@
-from typing import List, Optional
-from storage_and_access.Backup import Backup
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from storage_and_access.Backup import Backup
+
 
 class StorageDevice:
 

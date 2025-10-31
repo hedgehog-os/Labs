@@ -1,6 +1,8 @@
-from Form import Form
+from typing import List, Optional, TYPE_CHECKING
 
-from typing import List, Optional
+if TYPE_CHECKING:
+    from Form import Form
+
 
 class CheckList:
     def __init__(self,

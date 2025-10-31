@@ -1,10 +1,13 @@
-from documents.Report import Report
 from datetime import datetime
-from typing import Optional, List
-from metadata_and_analitics.Insight import Insight
-from metadata_and_analitics.Keyword import Keyword
-from metadata_and_analitics.Chart import Chart
-from documents.Document import Document
+from typing import Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Report import Report
+    from metadata_and_analitics.Insight import Insight
+    from metadata_and_analitics.Keyword import Keyword
+    from metadata_and_analitics.Chart import Chart
+    from documents.Document import Document
+
 
 class Summary:
     def __init__(self,

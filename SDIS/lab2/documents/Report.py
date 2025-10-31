@@ -1,10 +1,13 @@
 from datetime import datetime
-from typing import List, Optional
-from persons.CommitteeMember import CommitteeMember
-from metadata_and_analitics.Chart import Chart
-from metadata_and_analitics.Summary import Summary
-from metadata_and_analitics.Comment import Comment
+from typing import List, Optional, TYPE_CHECKING
 from Exceptions import ReportReviewerNotAssignedError, ReportChartNotFoundError
+
+if TYPE_CHECKING:
+    from persons.CommitteeMember import CommitteeMember
+    from metadata_and_analitics.Chart import Chart
+    from metadata_and_analitics.Summary import Summary
+    from metadata_and_analitics.Comment import Comment
+
 
 class Report:
     def __init__(self,

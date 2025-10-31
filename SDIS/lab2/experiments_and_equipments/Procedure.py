@@ -1,6 +1,9 @@
-from typing import List, Optional
-from experiments_and_equipments.TestCase import TestCase
-from experiments_and_equipments.Measurement import Measurement
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.CaseTest import CaseTest
+    from experiments_and_equipments.Measurement import Measurement
+
 
 
 class Procedure:
@@ -9,22 +12,22 @@ class Procedure:
                  name: str,
                  steps: List[str],
                  expected_outcome: Optional[str] = None,
-                 used_in: Optional[List["TestCase"]] = None) -> None:
+                 used_in: Optional[List["CaseTest"]] = None) -> None:
         self.procedure_id: int = procedure_id
         self.name: str = name
         self.steps: List[str] = steps
         self.expected_outcome: Optional[str] = expected_outcome
 
         # Ассоциация
-        self.used_in: List["TestCase"] = used_in or []
+        self.used_in: List["CaseTest"] = used_in or []
 
-    def add_test_case(self, test_case: "TestCase") -> None:
+    def add_test_case(self, test_case: "CaseTest") -> None:
         """Привязывает тест-кейс к процедуре, если он ещё не связан."""
         if test_case not in self.used_in:
             self.used_in.append(test_case)
             test_case.procedure = self
 
-    def remove_test_case(self, test_case: "TestCase") -> None:
+    def remove_test_case(self, test_case: "CaseTest") -> None:
         """Удаляет тест-кейс из процедуры."""
         if test_case in self.used_in:
             self.used_in.remove(test_case)

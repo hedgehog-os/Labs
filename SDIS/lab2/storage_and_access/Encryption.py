@@ -1,5 +1,8 @@
-from typing import Optional, List
-from storage_and_access.Backup import Backup
+from typing import Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from storage_and_access.Backup import Backup
+
 class Encryption:
 
     methods = {

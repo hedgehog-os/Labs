@@ -1,6 +1,9 @@
 from datetime import datetime
-from typing import Optional, List
-from persons.Editor import Editor
+from typing import Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from persons.Editor import Editor  # только для type hints
+
 class Revision:
     def __init__(self,
                  revision_id: int,

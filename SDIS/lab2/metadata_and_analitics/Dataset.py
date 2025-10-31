@@ -1,6 +1,8 @@
-from typing import List
-from documents.Report import Report
-from Chart import Chart
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Report import Report
+
 
 class DataSet:
     def __init__(self, dataset_id: int, name: str, source: str, records: List[dict]) -> None:
@@ -91,6 +93,7 @@ class DataSet:
 
     def attach_to_report(self, report: "Report", chart_title: str, chart_type: str, x_field: str, y_field: str) -> None:
         """Создаёт диаграмму из набора данных и добавляет её в отчёт."""
+        from Chart import Chart  # локальный импорт для избежания циклической зависимости
         chart_data = self.to_chart_data(x_field, y_field)
         if chart_data:
             chart = Chart(

@@ -1,8 +1,16 @@
 from datetime import datetime
-from typing import List, Optional
-from documents.Document import Document
-import Keyword
-from Exceptions import MetadataTagConflictError, MetadataKeywordNotFoundError, MetadataEncryptionError, MetadataDecryptionError
+from typing import List, Optional, TYPE_CHECKING
+from Exceptions import (
+    MetadataTagConflictError,
+    MetadataKeywordNotFoundError,
+    MetadataEncryptionError,
+    MetadataDecryptionError
+)
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from Keyword import Keyword
+
 
 class Metadata:
     def __init__(self,
@@ -38,11 +46,6 @@ class Metadata:
         if keyword not in self.keywords:
             raise MetadataKeywordNotFoundError(f"Ключевое слово '{keyword}' не найдено.")
         self.keywords.remove(keyword)
-
-    def remove_keyword(self, keyword: str) -> None:
-        """Удаляет ключевое слово, если оно существует."""
-        if keyword in self.keywords:
-            self.keywords.remove(keyword)
 
     def approve(self) -> None:
         """Устанавливает статус утверждения."""
@@ -88,12 +91,14 @@ class Metadata:
 
     def sync_tags_and_keywords(self, document: "Document") -> None:
         """Синхронизирует теги и ключевые слова с документом."""
+        from Keyword import Keyword  # локальный импорт
         document.tags = list(set(document.tags + self.tags))
         if document.keywords is None:
             document.keywords = []
         for word in self.keywords:
             if not any(k.word == word for k in document.keywords):
                 document.keywords.append(Keyword(word=word, relevance_score=0.5))
+
 
     def to_dict(self) -> dict:
         """Сериализует метаданные в словарь."""

@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
-from typing import List, Optional
-from documents.Draft import Draft
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Draft import Draft
+
 class Reviewer:
     def __init__(self,
                  reviewer_id: int,

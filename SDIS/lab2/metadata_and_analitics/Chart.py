@@ -1,4 +1,8 @@
-from documents.Report import Report
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from documents.Report import Report
+
 
 class Chart:
 

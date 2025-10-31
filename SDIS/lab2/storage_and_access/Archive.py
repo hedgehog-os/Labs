@@ -1,12 +1,15 @@
 from datetime import datetime
-from typing import List
-from documents.Document import Document
-from storage_and_access.Backup import Backup
-from experiments_and_equipments.StorageDevice import StorageDevice
-from documents.Report import Report
-from documents.Form import Form
-from metadata_and_analitics.Comment import Comment
+from typing import List, TYPE_CHECKING
 from Exceptions import ArchiveAlreadyContainsDocumentError, ArchiveDocumentNotFoundError
+
+if TYPE_CHECKING:
+    from documents.Document import Document
+    from storage_and_access.Backup import Backup
+    from experiments_and_equipments.StorageDevice import StorageDevice
+    from documents.Report import Report
+    from documents.Form import Form
+    from metadata_and_analitics.Comment import Comment
+
 
 class Archive:
     def __init__(self, archive_id: int, name: str, documents: List[int], archived_at: datetime) -> None:
@@ -99,6 +102,7 @@ class Archive:
 
     def store_on_device(self, device: "StorageDevice") -> None:
         """Добавляет архив как логическую единицу хранения."""
+        from storage_and_access.Backup import Backup  # локальный импорт
         note = f"Архив '{self.name}' содержит {len(self.documents)} документов, сохранён {self.archived_at.strftime('%Y-%m-%d')}."
         print(note)
         device.add_backup(Backup(
@@ -112,6 +116,7 @@ class Archive:
 
     def contribute_to_report(self, report: "Report") -> None:
         """Добавляет архив как источник в отчёт, если автор совпадает."""
+        from metadata_and_analitics.Comment import Comment  # локальный импорт
         if report.author_id in self.documents:
             report.comments.append(Comment(
                 comment_id=len(report.comments) + 1,
@@ -120,6 +125,7 @@ class Archive:
                 content=f"Архив '{self.name}' включён в отчёт '{report.title}'.",
                 posted_at=datetime.now()
             ))
+
 
     def validate_forms(self, forms: List["Form"]) -> List["Form"]:
         """Возвращает формы, связанные с документами архива."""

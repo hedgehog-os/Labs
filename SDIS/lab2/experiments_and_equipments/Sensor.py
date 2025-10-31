@@ -1,12 +1,16 @@
-from Device import Device
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.Device import Device
+
 
 class Sensor:
-    def __init__(self, sensor_id: int, type: str, device: Device) -> None:
+    def __init__(self, sensor_id: int, type: str, device: "Device") -> None:
         self.sensor_id: int = sensor_id
         self.type: str = type
-        self.device: Device = device
+        self.device: "Device" = device
 
-    def is_attached_to(self, device: Device) -> bool:
+    def is_attached_to(self, device: "Device") -> bool:
         """Проверяет, прикреплён ли сенсор к указанному устройству."""
         return self.device == device
 

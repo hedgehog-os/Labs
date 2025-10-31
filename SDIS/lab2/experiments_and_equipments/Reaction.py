@@ -1,6 +1,9 @@
 from datetime import datetime
-from typing import List, Optional
-from experiments_and_equipments.Chemical import Chemical
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from experiments_and_equipments.Chemical import Chemical
+
 
 class Reaction:
     def __init__(self,

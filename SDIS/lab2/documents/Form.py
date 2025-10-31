@@ -1,6 +1,8 @@
 from datetime import datetime
-from typing import List, Optional
-from CheckList import CheckList
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from CheckList import CheckList
 
 class Form:
     def __init__(self,
