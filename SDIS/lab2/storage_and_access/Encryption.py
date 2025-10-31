@@ -43,3 +43,43 @@ class Encryption:
         if value not in self.algorithms:
             raise ValueError(f'Недопустимый формат: {value}')
         self._algorithm = value
+
+    def apply_to_backup(self, backup: "Backup") -> None:
+        """Применяет шифрование к резервной копии и добавляет её в список связанных."""
+        if backup not in self.applied_to:
+            self.applied_to.append(backup)
+            backup.encrypted_with = self
+
+    def remove_from_backup(self, backup: "Backup") -> None:
+        """Удаляет связь шифрования с резервной копией."""
+        if backup in self.applied_to:
+            self.applied_to.remove(backup)
+        if backup.encrypted_with == self:
+            backup.encrypted_with = None
+
+    def is_strong_encryption(self) -> bool:
+        """Проверяет, считается ли шифрование надёжным по длине ключа."""
+        return self.key_length >= 256
+
+    def is_applied_to(self, backup: "Backup") -> bool:
+        """Проверяет, применено ли это шифрование к указанной резервной копии."""
+        return backup in self.applied_to
+
+    def summarize(self) -> str:
+        """Форматирует краткую информацию о шифровании."""
+        return (
+            f"Шифрование #{self.encryption_id}\n"
+            f"Метод: {self.method} | Алгоритм: {self.algorithm}\n"
+            f"Длина ключа: {self.key_length} бит\n"
+            f"Применено к {len(self.applied_to)} резервным копиям"
+        )
+
+    def to_dict(self) -> dict:
+        """Сериализует объект шифрования в словарь."""
+        return {
+            "encryption_id": self.encryption_id,
+            "method": self.method,
+            "key_length": self.key_length,
+            "algorithm": self.algorithm,
+            "applied_to": [b.backup_id for b in self.applied_to]
+        }

@@ -3,6 +3,7 @@ from typing import List, Optional
 from persons.CommitteeMember import CommitteeMember
 from metadata_and_analitics.Chart import Chart
 from metadata_and_analitics.Summary import Summary
+from metadata_and_analitics.Comment import Comment
 
 class Report:
     def __init__(self,
@@ -12,7 +13,8 @@ class Report:
                  created_at: Optional[datetime] = None,
                  charts: Optional[List["Chart"]] = None,
                  summary: Optional["Summary"] = None,
-                 reviewed_by: Optional[List["CommitteeMember"]] = None) -> None:
+                 reviewed_by: Optional[List["CommitteeMember"]] = None,
+                 comments: List["Comment"] = None) -> None:
         self.report_id: int = report_id
         self.title: str = title
         self.author_id: int = author_id
@@ -22,6 +24,7 @@ class Report:
         self.charts: List["Chart"] = charts or []
         self.summary: Optional["Summary"] = summary
         self.reviewed_by: Optional[List["CommitteeMember"]] = reviewed_by
+        self.comments: List["Comment"] = comments
 
     def add_chart(self, chart: "Chart") -> None:
         """Добавляет диаграмму в отчёт."""

@@ -12,7 +12,7 @@ from Report import Report
 class Document:
 
     statuses = {
-        'draft', 'final', 'archived'
+        'draft', 'final', 'archived', 'restricted'
     }
 
     def __init__(self,
