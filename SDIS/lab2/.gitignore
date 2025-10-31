@@ -6,3 +6,4 @@ tests/.pytest_cache
 pytest.ini
 tests/__pycache__
 tests/.pytest_cache
+/__init__.py
