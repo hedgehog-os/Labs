@@ -4,6 +4,7 @@ from persons.CommitteeMember import CommitteeMember
 from metadata_and_analitics.Chart import Chart
 from metadata_and_analitics.Summary import Summary
 from metadata_and_analitics.Comment import Comment
+from Exceptions import ReportReviewerNotAssignedError, ReportChartNotFoundError
 
 class Report:
     def __init__(self,
@@ -31,9 +32,9 @@ class Report:
         self.charts.append(chart)
 
     def remove_chart(self, chart: "Chart") -> None:
-        """Удаляет диаграмму из отчёта."""
-        if chart in self.charts:
-            self.charts.remove(chart)
+        if chart not in self.charts:
+            raise ReportChartNotFoundError("Диаграмма не найдена в отчёте.")
+        self.charts.remove(chart)
 
     def assign_summary(self, summary: "Summary") -> None:
         """Привязывает резюме к отчёту и обновляет обратную ссылку."""
@@ -68,7 +69,7 @@ class Report:
             member.evaluation_notes.append(note)
             member.last_evaluation_date = datetime.now()
         else:
-            raise ValueError("Член комиссии не назначен на этот отчёт.")
+            raise ReportReviewerNotAssignedError("Член комиссии не назначен на этот отчёт.")
 
     def get_committee_roles(self) -> List[str]:
         """Возвращает список ролей всех рецензентов отчёта."""

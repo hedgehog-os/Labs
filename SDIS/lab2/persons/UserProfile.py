@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from Exceptions import PhoneNumberFormatError, EmailFormatError, SecurityQuestionEmptyError
 class UserProfile:
     account_statuses: set[str] = {'active', 'suspended', 'pending', 'deleted'}
 
@@ -45,19 +45,19 @@ class UserProfile:
         self.two_factor_enabled = False
 
     def reset_security_question(self, new_question: str) -> None:
-        """Обновляет контрольный вопрос."""
-        if new_question:
-            self.security_question = new_question
+        if not new_question:
+            raise SecurityQuestionEmptyError("Контрольный вопрос не может быть пустым.")
+        self.security_question = new_question
 
     def update_email(self, new_email: str) -> None:
-        """Обновляет адрес электронной почты."""
-        if new_email and "@" in new_email:
-            self.email = new_email
+        if not new_email or "@" not in new_email:
+            raise EmailFormatError("Неверный формат email.")
+        self.email = new_email
 
     def update_phone(self, new_phone: str) -> None:
-        """Обновляет номер телефона."""
-        if new_phone and new_phone.isdigit():
-            self.phone_number = new_phone
+        if not new_phone.isdigit():
+            raise PhoneNumberFormatError("Номер телефона должен содержать только цифры.")
+        self.phone_number = new_phone
 
     def set_language(self, language: str) -> None:
         """Устанавливает предпочтительный язык."""

@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from documents.Document import Document
 import Keyword
+from Exceptions import MetadataTagConflictError, MetadataKeywordNotFoundError, MetadataEncryptionError, MetadataDecryptionError
 
 class Metadata:
     def __init__(self,
@@ -24,19 +25,19 @@ class Metadata:
         self.encryption_method: Optional[str] = encryption_method
 
     def add_tag(self, tag: str) -> None:
-        """Добавляет тег, если он ещё не включён."""
-        if tag and tag not in self.tags:
-            self.tags.append(tag)
+        if tag in self.tags:
+            raise MetadataTagConflictError(f"Тег '{tag}' уже существует.")
+        self.tags.append(tag)
 
     def remove_tag(self, tag: str) -> None:
         """Удаляет тег, если он существует."""
         if tag in self.tags:
             self.tags.remove(tag)
 
-    def add_keyword(self, keyword: str) -> None:
-        """Добавляет ключевое слово, если оно ещё не включено."""
-        if keyword and keyword not in self.keywords:
-            self.keywords.append(keyword)
+    def remove_keyword(self, keyword: str) -> None:
+        if keyword not in self.keywords:
+            raise MetadataKeywordNotFoundError(f"Ключевое слово '{keyword}' не найдено.")
+        self.keywords.remove(keyword)
 
     def remove_keyword(self, keyword: str) -> None:
         """Удаляет ключевое слово, если оно существует."""
@@ -52,12 +53,14 @@ class Metadata:
         self.approved = False
 
     def encrypt(self, method: str = "AES-256") -> None:
-        """Включает шифрование с указанным методом."""
+        if not method:
+            raise MetadataEncryptionError("Метод шифрования не указан.")
         self.is_encrypted = True
         self.encryption_method = method
 
     def decrypt(self) -> None:
-        """Отключает шифрование."""
+        if not self.is_encrypted:
+            raise MetadataDecryptionError("Метаданные не зашифрованы.")
         self.is_encrypted = False
         self.encryption_method = None
 

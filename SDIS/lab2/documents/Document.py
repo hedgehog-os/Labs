@@ -9,6 +9,7 @@ from metadata_and_analitics.Keyword import Keyword
 from Form import Form
 from Protocol import Protocol
 from Report import Report
+from Exceptions import DocumentNotReadyError, DocumentAlreadyArchivedError, DocumentRestoreError
 class Document:
 
     statuses = {
@@ -59,24 +60,25 @@ class Document:
             raise ValueError(f'Недопустимый статус: {value}')
         self._status = value
         
-    def submit(self) -> None:
-        if self.status != "draft":
-            raise ValueError("Документ уже отправлен или архивирован.")
-        self.status = "final"
-
     def revise(self, revision: "Revision") -> None:
         self.revisions.append(revision)
         self.status = "draft"
 
+    def submit(self) -> None:
+        if not self.is_ready_for_submission():
+            raise DocumentNotReadyError("Документ не готов к отправке: проверь метаданные, шаблон и ревизии.")
+        self.status = "final"
+
     def archive(self) -> None:
         if self.status == "archived":
-            raise ValueError("Документ уже в архиве.")
+            raise DocumentAlreadyArchivedError("Документ уже находится в архиве.")
         self.status = "archived"
 
     def restore(self) -> None:
         if self.status != "archived":
-            raise ValueError("Можно восстановить только архивированный документ.")
+            raise DocumentRestoreError("Можно восстановить только архивированный документ.")
         self.status = "final"
+
     
     def add_tag(self, tag: str) -> None:
         if tag not in self.tags:

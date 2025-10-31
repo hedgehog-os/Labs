@@ -6,6 +6,7 @@ from experiments_and_equipments.StorageDevice import StorageDevice
 from documents.Report import Report
 from documents.Form import Form
 from metadata_and_analitics.Comment import Comment
+from Exceptions import ArchiveAlreadyContainsDocumentError, ArchiveDocumentNotFoundError
 
 class Archive:
     def __init__(self, archive_id: int, name: str, documents: List[int], archived_at: datetime) -> None:
@@ -15,14 +16,15 @@ class Archive:
         self.archived_at: datetime = archived_at
 
     def add_document(self, document_id: int) -> None:
-        """Добавляет документ в архив, если он ещё не включён."""
-        if document_id not in self.documents:
-            self.documents.append(document_id)
-
-    def remove_document(self, document_id: int) -> None:
-        """Удаляет документ из архива."""
         if document_id in self.documents:
-            self.documents.remove(document_id)
+            raise ArchiveAlreadyContainsDocumentError(f"Документ #{document_id} уже в архиве.")
+        self.documents.append(document_id)
+
+    
+    def remove_document(self, document_id: int) -> None:
+        if document_id not in self.documents:
+            raise ArchiveDocumentNotFoundError(f"Документ #{document_id} не найден в архиве.")
+        self.documents.remove(document_id)
 
     def has_document(self, document_id: int) -> bool:
         """Проверяет, содержится ли документ в архиве."""
