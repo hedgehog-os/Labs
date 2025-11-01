@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from experiments_and_equipments.StorageDevice import StorageDevice
     from documents.Report import Report
     from documents.Form import Form
-    from metadata_and_analitics.Comment import Comment
 
 
 class Archive:
@@ -125,7 +124,6 @@ class Archive:
                 content=f"Архив '{self.name}' включён в отчёт '{report.title}'.",
                 posted_at=datetime.now()
             ))
-
 
     def validate_forms(self, forms: List["Form"]) -> List["Form"]:
         """Возвращает формы, связанные с документами архива."""

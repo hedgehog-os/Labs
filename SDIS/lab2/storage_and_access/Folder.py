@@ -5,8 +5,6 @@ if TYPE_CHECKING:
     from documents.Document import Document
     from documents.Report import Report
     from storage_and_access.Archive import Archive
-    from metadata_and_analitics.Comment import Comment
-    from Folder import Folder  # если используется в is_child_of
 
 
 class Folder:

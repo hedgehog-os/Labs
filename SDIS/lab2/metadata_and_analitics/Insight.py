@@ -70,8 +70,6 @@ class Insight:
                 posted_at=datetime.now()
             ))
 
-
-
     def visualize_links(self) -> str:
         """Генерирует текстовую карту связей инсайта с документами."""
         if not self.related_documents:

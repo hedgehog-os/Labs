@@ -3,7 +3,6 @@ from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from documents.Document import Document
-    from metadata_and_analitics.Comment import Comment
 
 
 class Supervisor:

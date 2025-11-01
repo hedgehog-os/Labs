@@ -14,8 +14,8 @@ class AccessLog:
         self.email: str = email
         self.timestamp: datetime = timestamp
         self.document_id: Optional[int] = document_id
-        self._action: str = ""  # инициализация внутреннего поля
-        self.action = action     # вызов сеттера с валидацией
+        self._action: str = ""
+        self.action = action
 
     @property
     def action(self) -> str:

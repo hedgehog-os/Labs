@@ -26,10 +26,6 @@ class PhoneNumberFormatError(Exception):
     """Неверный формат номера телефона."""
     pass
 
-class EmailFormatError(Exception):
-    """Неверный формат электронной почты."""
-    pass
-
 class SecurityQuestionEmptyError(Exception):
     """Контрольный вопрос не может быть пустым."""
     pass

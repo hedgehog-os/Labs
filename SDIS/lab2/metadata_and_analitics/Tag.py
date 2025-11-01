@@ -6,7 +6,6 @@ if TYPE_CHECKING:
     from Metadata import Metadata
     from Insight import Insight
     from documents.Report import Report
-    from Comment import Comment
 
 class Tag:
 
