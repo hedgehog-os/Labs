@@ -1,0 +1,1 @@
+FTIS - Fundamentals of the Theory of Intelligent Systems
