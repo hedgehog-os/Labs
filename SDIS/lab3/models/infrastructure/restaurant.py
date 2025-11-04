@@ -1,24 +1,22 @@
 from __future__ import annotations
 from typing import List
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    
+    from infrastructure.terminal import Terminal
 class Restaurant:
     VALID_CUISINES = {
         "italian", "japanese", "chinese", "indian", "french",
         "american", "mexican", "thai", "vegetarian", "fast food"
     }
 
-    VALID_TERMINALS = {
-        "A", "B", "C", "D", "E", "International", "Domestic"
-    }
-
-    def __init__(self, name: str, cuisine_type: str, terminal_name: str) -> None:
+    def __init__(self, name: str, cuisine_type: str, terminal: Terminal) -> None:
         if cuisine_type.lower() not in self.VALID_CUISINES:
             raise ValueError(f"Invalid cuisine type: {cuisine_type}")
-        if terminal_name not in self.VALID_TERMINALS:
-            raise ValueError(f"Invalid terminal name: {terminal_name}")
         self.name: str = name
         self.cuisine_type: str = cuisine_type.lower()
-        self.terminal_name: str = terminal_name
+        self.terminal: Terminal = terminal
         self.is_open: bool = True
         self.maintenance_required: bool = False
         self.customer_log: List[str] = []
