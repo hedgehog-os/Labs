@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List
 
-class InformationKiosk:
+class Kiosk:
     VALID_LOCATIONS = {
         "arrival hall",
         "departure hall",
