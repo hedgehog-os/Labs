@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Dict, Optional
 from exceptions.flight_exceptions import GateConflictException
+from datetime import datetime
 
 if TYPE_CHECKING:
     from models.passenger.passenger import Passenger
@@ -24,23 +25,36 @@ class Flight:
         departure_gate: Gate,
         arrival_gate: Gate
     ) -> None:
-        self.flight_number: str = flight_number
-        self.airline: Airline = airline
-        self.aircraft: Aircraft = aircraft
-        self.route: Route = route
-        self.schedule: FlightSchedule = schedule
-        self.departure_gate: Gate = departure_gate
-        self.arrival_gate: Gate = arrival_gate
+        self.flight_number = flight_number
+        self.airline = airline
+        self.aircraft = aircraft
+        self.route = route
+        self.schedule = schedule
+        self.departure_gate = departure_gate
+        self.arrival_gate = arrival_gate
         self.passengers: List[Passenger] = []
         self.boarding_passes: List[BoardingPass] = []
         self.pilots: List[Pilot] = []
         self.attendants: List[FlightAttendant] = []
+        self.notes: List[str] = []
+        self.status: str = "Scheduled"
 
     def board_passenger(self, passenger: Passenger) -> None:
+        if self.is_full():
+            raise Exception("Flight is full.")
         self.passengers.append(passenger)
+        self.notes.append(f"Boarded {passenger.full_name}")
+
+    def remove_passenger(self, passport_number: str) -> bool:
+        for p in self.passengers:
+            if p.passport.number == passport_number:
+                self.passengers.remove(p)
+                self.notes.append(f"Removed passenger {p.full_name}")
+                return True
+        return False
 
     def get_manifest(self) -> List[Passenger]:
-        return self.passengers
+        return self.passengers.copy()
 
     def is_full(self) -> bool:
         return len(self.passengers) >= self.aircraft.capacity
@@ -56,13 +70,15 @@ class Flight:
             raise GateConflictException(gate.gate_number)
         self.departure_gate = gate
         gate.assign_flight(self)
+        self.notes.append(f"Gate {gate.gate_number} assigned")
 
-    def get_passenger_by_name(self, name: str) -> Passenger | None:
+    def get_passenger_by_name(self, name: str) -> Optional[Passenger]:
         return next((p for p in self.passengers if p.full_name == name), None)
 
     def assign_crew(self, pilot: Pilot, attendants: List[FlightAttendant]) -> None:
         self.pilots.append(pilot)
         self.attendants.extend(attendants)
+        self.notes.append(f"Crew assigned: Pilot {pilot.name}, {len(attendants)} attendants")
 
     def get_languages_onboard(self) -> List[str]:
         return list({lang for a in self.attendants for lang in a.languages})
@@ -71,8 +87,9 @@ class Flight:
         for passenger in self.passengers:
             bp = BoardingPass(ticket=passenger.ticket, passenger=passenger, gate_number=self.departure_gate.gate_number)
             self.boarding_passes.append(bp)
+        self.notes.append(f"{len(self.boarding_passes)} boarding passes generated")
 
-    def get_boarding_pass(self, passport_number: str) -> BoardingPass | None:
+    def get_boarding_pass(self, passport_number: str) -> Optional[BoardingPass]:
         return next((bp for bp in self.boarding_passes if bp.passenger.passport.number == passport_number), None)
 
     def is_ready_for_departure(self) -> bool:
@@ -85,9 +102,33 @@ class Flight:
             and not self.is_full()
         )
 
+    def update_status(self, new_status: str) -> None:
+        self.status = new_status
+        self.notes.append(f"Status updated to {new_status}")
+
     def get_flight_summary(self) -> str:
         return (
             f"{self.flight_number}: {self.route.origin.code} → {self.route.destination.code}, "
             f"{self.schedule.departure_time} → {self.schedule.arrival_time}, "
-            f"{len(self.passengers)}/{self.aircraft.capacity} passengers"
+            f"{len(self.passengers)}/{self.aircraft.capacity} passengers, Status: {self.status}"
         )
+
+    def to_dict(self) -> Dict:
+        return {
+            "flight_number": self.flight_number,
+            "airline": self.airline.name,
+            "aircraft": self.aircraft.model,
+            "route": f"{self.route.origin.code} → {self.route.destination.code}",
+            "schedule": {
+                "departure": self.schedule.departure_time,
+                "arrival": self.schedule.arrival_time
+            },
+            "crew": {
+                "pilots": [p.name for p in self.pilots],
+                "attendants": [a.name for a in self.attendants]
+            },
+            "passenger_count": len(self.passengers),
+            "boarding_passes": [bp.passenger.full_name for bp in self.boarding_passes],
+            "status": self.status,
+            "notes": self.notes.copy()
+        }
