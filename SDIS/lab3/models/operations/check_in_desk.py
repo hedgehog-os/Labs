@@ -55,4 +55,5 @@ class CheckInDesk:
 
     def summary(self) -> str:
         status = "active" if self.is_operational else "offline"
-        return f"Desk {self.desk_id} in Terminal {self.terminal_name} ({status}, {len(self.queue)} in queue)"
+        return f"Desk {self.desk_id} in Terminal {self.terminal.name} ({status}, {len(self.queue)} in queue)"
+

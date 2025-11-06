@@ -9,6 +9,10 @@ if TYPE_CHECKING:
 class VisaControl:
     def __init__(self, country: str) -> None:
         self.country: str = country
+        self.verified_passengers: List[str] = []
+        self.failed_passengers: List[str] = []
+        self.audit_log: List[str] = []
+
 
     def verify(self, passenger: Passenger, date: str = "2025-11-04") -> bool:
         visas: list[Visa] = getattr(passenger, "visas", [])
