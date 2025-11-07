@@ -17,6 +17,7 @@ class Passenger:
         self.baggage: List[Baggage] = []
         self.visas: List[Visa] = []
         self.loyalty_program: Optional[LoyaltyProgram] = None
+        self.notes: List[str] = []
 
     def add_baggage(self, item: Baggage) -> None:
         self.baggage.append(item)
