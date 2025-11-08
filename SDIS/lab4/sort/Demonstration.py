@@ -44,6 +44,11 @@ class Demonstration:
         print('BucketSort: ', bucketsort)
         print()
 
+        selectionsort = SelectionSort.sort(data=persons, key=lambda p: p.name)
+        print('Sort by name: ', persons)
+        print('SelectionSort: ', selectionsort)
+        print()
+
     def run():
         Demonstration.integers()
         Demonstration.floats()
