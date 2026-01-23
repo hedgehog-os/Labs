@@ -1,0 +1,18 @@
+meta
+<- concept_company;
+=> nrel_main_idtf:
+    [Мета]
+    (*
+        <- lang_ru;;
+    *);
+-> rrel_employee:
+    yann_lecun;;
+
+yann_lecun
+=> nrel_main_idtf:
+    [Ян Лекун]
+    (*
+        <- lang_ru;;
+    *);
+<- concept_data_scientist;;
+

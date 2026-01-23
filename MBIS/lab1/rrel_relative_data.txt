@@ -1,0 +1,37 @@
+rrel_relative_data
+=> nrel_main_idtf:
+   [относительные данные]              (* идентификатор на русском *)
+   (*
+      <- lang_ru;;
+   *);
+=> nrel_main_idtf:
+   [relative data]                     (* идентификатор на английском *)
+   (*
+      <- lang_en;;
+   *);
+<- rrel_explored_relation:
+   subject_domain_data_science;        (* предметная область — Data Science *)
+<= nrel_inclusion:
+   nrel_membership;                    (* принадлежит множеству отношений *)
+=> nrel_definitional_domain:
+   …
+   (*
+      <= nrel_set_union: {
+         concept_absolute_data;         (* объект, к которому относятся данные *)
+         concept_context;               (* контекст или задача *)
+      };;
+   *);
+=> nrel_first_domain:
+   concept_absolute_data;               (* первый домен — абсолютные данные *)
+=> nrel_second_domain:
+   concept_context;                     (* второй домен — предметная область анализа *)
+=> nrel_inclusion:
+   rrel_cv_data;                        (* частный случай — данные в задаче CV *)
+=> nrel_definition:
+   rrel_nlp_data;  			(* частный случай — данные в задаче NLP *)
+=> nrel_definition:
+   rrel_machine_learning_data;  	(* частный случай — данные в задаче машинного обучения *)
+   [Относительные данные — это данные, значение которых зависит от контекста, задачи или предметной области.]
+   (*
+      <- lang_ru;;
+   *);;

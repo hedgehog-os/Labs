@@ -1,0 +1,48 @@
+tensorflow
+<- concept_ds_tool;
+=> nrel_main_idtf: 
+    [TensorFlow] 
+    (* <- lang_ru;; *);
+-> rrel_applies_to: 
+    deep_learning;;
+    
+pandas
+<- concept_ds_tool;
+=> nrel_main_idtf: 
+    [pandas] 
+    (* <- lang_ru;; *);;
+    
+python
+<- concept_ds_tool;
+=> nrel_main_idtf:
+    [Python]
+    (* <- lang_ru;; *);
+-> rrel_applies_to:
+    pandas;
+    scikit_learn;
+    tensorflow;
+    pytorch;;
+    
+scikit_learn
+<- concept_ds_tool;
+=> nrel_main_idtf: 
+    [scikit-learn] 
+    (* <- lang_ru;; *);
+-> rrel_applies_to: 
+    classification;
+    regression;
+    clustering;;
+    
+pytorch
+<- concept_ds_tool;
+=> nrel_main_idtf: 
+    [PyTorch] 
+    (* <- lang_ru;; *);
+-> rrel_applies_to: 
+    deep_learning;;
+    
+sql
+<- concept_ds_tool;
+=> nrel_main_idtf: 
+    [SQL] 
+    (* <- lang_ru;; *);;

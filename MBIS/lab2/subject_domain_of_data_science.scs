@@ -1,0 +1,176 @@
+subject_domain_of_data_science
+=> nrel_main_idtf:
+   [Предметная область Data Science]
+   (*
+      <- lang_ru;;
+   *);
+   [Subject domain of Data Science]
+   (*
+      <- lang_en;;
+   *);
+<- concept_subject_domain;
+=> nrel_ontology:
+   structural_specification_of_subject_domain_of_data_science;
+   set_theoretic_ontology_of_subject_domain_of_data_science;;
+
+structural_specification_of_subject_domain_of_data_science = [*
+<- concept_structural_specification_of_subject_domain;;
+
+subject_domain_of_data_science = [*
+-> rrel_maximum_studied_object_class:
+   concept_data_scientist;
+-> rrel_not_maximum_studied_object_class:
+   concept_machine_learning_model;
+   concept_dataset;
+   concept_feature;
+   concept_experiment;
+   concept_pipeline;
+   concept_metric;
+   concept_deployment;
+
+-> rrel_explored_relation:
+   nrel_data_collection;
+   nrel_data_preprocessing;
+   nrel_feature_engineering;
+   nrel_model_training;
+   nrel_model_evaluation;
+   nrel_hyperparameter_tuning;
+   nrel_model_selection;
+   nrel_model_deployment;
+   nrel_model_monitoring;
+   nrel_a_b_testing;
+   nrel_data_drift;
+   nrel_feature_importance;
+   nrel_cross_validation;
+   nrel_train_test_split;
+   nrel_overfitting;
+   nrel_underfitting;
+   nrel_bias_variance_tradeoff;
+   rrel_supervised_learning;
+   rrel_unsupervised_learning;
+   rrel_reinforcement_learning;
+   rrel_regression;
+   rrel_classification;
+   rrel_clustering;
+   rrel_dimensionality_reduction;
+   rrel_neural_network;
+   rrel_deep_learning;
+   rrel_natural_language_processing;
+   rrel_computer_vision;rrel_student
+<- sc_node_role_relation;
+=> nrel_main_idtf:
+    [студент']
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_first_domain:
+    concept_group;
+=> nrel_second_domain:
+    concept_student;;
+   rrel_recommendation_system;
+   rrel_time_series_analysis;
+*];
+
+<= nrel_child_subject_domain:
+   subject_domain_of_machine_learning;
+   subject_domain_of_statistics;
+   subject_domain_of_big_data;
+   subject_domain_of_data_engineering;
+
+=> nrel_child_subject_domain:
+   subject_domain_of_data_science_in_python;
+   subject_domain_of_data_science_in_r;
+   subject_domain_of_mLOps;
+   subject_domain_of_business_analytics;
+   subject_domain_of_predictive_analytics;
+   subject_domain_of_causal_inference;
+*;;
+
+set_theoretic_ontology_of_subject_domain_of_data_science = [*
+<- concept_set_theoretic_ontology_of_subject_domain;;
+
+concept_data_scientist
+=> nrel_subdividing: {
+   concept_data_analyst;
+   concept_machine_learning_engineer;
+   concept_data_engineer;
+   concept_research_scientist
+};;
+
+concept_dataset
+=> nrel_subdividing: {
+   concept_training_dataset;
+   concept_validation_dataset;
+   concept_test_dataset;
+   concept_unlabeled_dataset
+};;
+
+concept_machine_learning_model
+=> nrel_subdividing: {
+   concept_supervised_model;
+   concept_unsupervised_model;
+   concept_reinforcement_learning_model
+};;
+
+concept_supervised_model
+=> nrel_inclusion:
+   concept_regression_model;
+   concept_classification_model;;
+
+concept_unsupervised_model
+=> nrel_inclusion:
+   concept_clustering_model;
+   concept_dimensionality_reduction_model;
+   concept_anomaly_detection_model;;
+
+concept_metric
+=> nrel_subdividing: {
+   concept_accuracy;
+   concept_precision;
+   concept_recall;
+   concept_f1_score;
+   concept_roc_auc;
+   concept_mae;
+   concept_mse;
+   concept_rmse;
+   concept_r_squared;
+   concept_silhouette_score;
+   concept_log_loss
+};;
+
+nrel_model_training
+=> nrel_inclusion:
+   nrel_hyperparameter_tuning;
+   nrel_cross_validation;;
+
+nrel_model_evaluation
+=> nrel_inclusion:
+   nrel_model_selection;
+   nrel_a_b_testing;;
+
+nrel_deployment
+=> nrel_subdividing: {
+   nrel_batch_prediction;
+   nrel_real_time_inference;
+   nrel_model_serving
+};;
+
+rrel_supervised_learning
+=> nrel_inclusion:
+   rrel_regression;
+   rrel_classification;;
+
+rrel_unsupervised_learning
+=> nrel_inclusion:
+   rrel_clustering;
+   rrel_dimensionality_reduction;;
+
+rrel_deep_learning
+=> nrel_inclusion:
+   rrel_neural_network;
+   rrel_convolutional_neural_network;
+   rrel_recurrent_neural_network;
+   rrel_transformer;
+   rrel_large_language_model;;
+
+*];;

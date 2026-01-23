@@ -1,0 +1,27 @@
+Google
+<- concept_company;
+=> nrel_main_idtf:
+    [Гугл]
+    (*
+        <- lang_ru;;
+    *);
+-> rrel_employee:
+    andrew_ng;
+    fe_fe_li;;
+
+andrew_ng
+=> nrel_main_idtf:
+    [Эндрю Ын]
+    (*
+        <- lang_ru;;
+    *);
+<- concept_data_scientist;;
+
+fe_fe_li
+=> nrel_main_idtf:
+    [Фэй Фэй Ли]
+    (*
+        <- lang_ru;;
+    *);
+<- concept_data_scientist;;
+

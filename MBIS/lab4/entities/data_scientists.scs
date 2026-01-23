@@ -1,0 +1,34 @@
+Andrew
+<- concept_data_scientist;
+=> nrel_main_idtf: 
+    [Эндрю Ын] 
+    (* <- lang_ru;; *);
+=> nrel_fio: 
+    [Andrew Ng] 
+    (* <- lang_en;; *);
+-> rrel_uses: 
+    tensorflow;
+    python;
+    nlp;;
+
+Fei
+<- concept_data_scientist;
+=> nrel_main_idtf: 
+    [Фэй-Фэй Ли] 
+    (* <- lang_ru;; *);
+=> nrel_fio: 
+    [Fei-Fei Li] 
+    (* <- lang_en;; *);
+-> rrel_uses: 
+    pytorch;;
+    
+Yann
+<- concept_data_scientist;
+=> nrel_main_idtf: 
+    [Ян Лекун] 
+    (* <- lang_ru;; *);
+=> nrel_fio: 
+    [Yann LeCun] 
+    (* <- lang_en;; *);
+-> rrel_uses: 
+    pytorch;;

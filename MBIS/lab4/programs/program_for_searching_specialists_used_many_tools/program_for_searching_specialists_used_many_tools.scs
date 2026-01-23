@@ -1,0 +1,273 @@
+// program_for_searching_tools_of_scientists.scs
+// ==========================================================================
+// ПРОГРАММА: Программа поиска инструментов специалистов в Data Science
+// ==========================================================================
+// НАЗНАЧЕНИЕ:
+//   Эта scp-программа ищет всех специалистов в указанной кампании
+//   и собирает их в результирующее множество.
+//
+// ВХОДНЫЕ ПАРАМЕТРЫ:
+//   .._company - кампания, в которой работает специалист.
+//
+// ВЫХОДНЫЕ ПАРАМЕТРЫ:
+//   .._result_sientists - результирующая структура, содержащая всех найденных специалистов, использующих pytorch.
+//
+// АЛГОРИТМ:
+//   1. Создать пустое результирующее множество специалистов.
+//   2. Проверить, что входной аргумент - это экземпляр класса задачи.
+//   3. Найти всех специалистов, принадлежащих указанной кампании.
+//   4. Если специалист использует инструменты, то добавляем специалиста в результирующее множество .
+//   5. Очистить временные множества и вернуть результат.
+//
+// ИСПОЛЬЗУЕМЫЕ КЛЮЧЕВЫЕ SC-ЭЛЕМЕНТЫ:
+//   - concept_company: класс кампаний
+//   - concept_data_sientist: класс специалистов
+//   - concept_company: связывает кампанию со специалистами
+//   - concept_ds_tool: класс интрументов
+//   - rrel_uses: связывает специалиста с интсрументами
+//
+// ==========================================================================================
+
+program_for_searching_sientists_used_tools
+=> nrel_main_idtf:
+	[Программа поиска специлистов, использующих инструменты]
+    (*
+        <- lang_ru;;
+    *);
+	[Program for searching sientists used tools]
+    (*
+        <- lang_en;;
+    *);
+<- scp_program;
+-> rrel_key_sc_element:
+    .._process;;
+
+program_for_searching_scientists_used_tools = [*
+.._process
+<-_ scp_process;
+
+// ОБЪЯВЛЕНИЕ ВХОДНЫХ И ВЫХОДНЫХ ПАРАМЕТРОВ:
+_-> rrel_1:: rrel_in:: .._company; // кампания, в рамках которой ищутся специалисты использующие инструменты.
+_-> rrel_2:: rrel_out:: .._result_sientists; // результирующая структура специалистов, использующих инструменты.
+
+<=_ nrel_decomposition_of_action:: _...
+(*
+	// ШАГ 1: ИНИЦИАЛИЗАЦИЯ РЕЗУЛЬТИРУЮЩЕЙ СТРУКТУРЫ
+	// Создать пустую структуру для добавления специаллистов.
+	_-> rrel_1:: .._generate_result_set_of_scientists_used_tools
+	(*
+		<-_ genElStr3;;
+
+		_-> rrel_1:: rrel_assign:: rrel_scp_var:: rrel_const:: rrel_node:: rrel_structure:: .._result_scientists;;
+		_-> rrel_2:: rrel_assign:: rrel_scp_var:: rrel_const_perm_pos_arc:: .._arc_from_result_sientists_to_class;;
+		_-> rrel_3:: rrel_fixed:: rrel_scp_const:: concept_data_scientist;;
+
+        // Перейти к проверке входного аргумента.
+		_=> nrel_goto:: .._check_company;;
+	*);;
+
+// ШАГ 2: ПРОВЕРКА ВХОДНОГО АРГУМЕНТА
+	// Проверить, что входной аргумент действительно является экземпляром класса кампании.
+	_-> .._check_company
+	(*
+		<-_ searchElStr3;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: concept_company;;
+		_-> rrel_2:: rrel_assign:: rrel_const_perm_pos_arc:: rrel_scp_var:: .._arc_from_class_to_company;;
+		_-> rrel_3:: rrel_fixed:: rrel_scp_const:: .._company;;
+
+		// Если входной аргумент является экземпляром класса кампаний, 
+		// то перейти к печати в терминал, что он является кампанией.
+		_=> nrel_then:: .._print_that_specified_argument_is_company;;
+		// Если входной аргумент не является экземпляром класса кампаний, 
+		// то перейти к печати в терминал, что он не является кампаний.
+		_=> nrel_else:: .._print_that_specified_argument_is_not_company;;
+	*);;
+
+	// Напечатать в терминал, что входной аргумент является университетом.
+	_-> .._print_that_specified_argument_is_company
+	(*
+		<-_ printNl;;		
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: [Specified argument is company];;
+
+		// Перейти к поиску всех групп в университете.
+		_=> nrel_goto:: .._search_company_scientists;;
+	*);;
+// ШАГ 3: ПОИСК ВСЕХ СПЕЦИАЛИСТОВ В КАМПАНИИ
+	// Найти всех специалистов, работающих в текущей кампании, сформировать множество из них и записать в .._found_scientists.
+	_-> .._search_company_sientists
+	(*
+		<-_ searchSetStr5;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_var:: .._company;;
+		_-> rrel_2:: rrel_assign:: rrel_scp_var:: rrel_const_perm_pos_arc:: .._arc_from_company_to_scientist;;
+		_-> rrel_3:: rrel_assign:: rrel_scp_var:: rrel_const:: rrel_node:: .._sientist;;
+		_-> rrel_4:: rrel_assign:: rrel_scp_var:: rrel_const_perm_pos_arc:: .._arc_to_arc_from_company_to_sientist;;
+		_-> rrel_5:: rrel_fixed:: rrel_scp_const:: rrel_sientist;;
+	
+		_-> rrel_set_3:: rrel_assign:: rrel_scp_var:: .._found_sientists;;
+
+		// Если специалисты найдены, то перейти к выбору специалиста.
+		_=> nrel_then:: .._get_next_sientist;;
+	*);;
+
+// ШАГ 4: ВЫБРАТЬ СПЕЦИАЛИСТА ИЗ МНОЖЕСТВА НАЙДЕННЫХ СПЕЦИАЛИСТОВ
+	// Найти любого специалиста во множестве найденных специалистов, являющегося значением переменной .._found_sientists.
+	_-> .._get_next_sientist
+	(*
+		<-_ searchElStr3;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_var:: .._found_sientist;;
+		_-> rrel_2:: rrel_assign:: rrel_const_perm_pos_arc:: rrel_scp_var:: .._arc_from_sientist_set_to_sientist;;
+		_-> rrel_3:: rrel_assign:: rrel_scp_var:: .._sientist;;
+		
+		// Если специалисты еще остались, то перейти к удалению выбранного специалиста из множества.
+		_=> nrel_then:: .._pop_sientist_from_set;;
+		// Если все специалисты были пройдены, то перейти к печати в терминал, что все специалисты были пройдены.
+		_=> nrel_else:: .._print_that_all_sientists_were_iterated;;
+	*);;
+
+// ШАГ 5: УДАЛИТЬ ВЫБРАННОГО СПЕЦИАЛИСТА ИЗ МНОЖЕСТВА НАЙДЕННЫХ СПЕЦИАЛИСТОВ
+	// Удалить sc-дугу между множеством в .._found_sientists и выбранным специалистом.
+	_-> .._pop_sientist_from_set
+	(*
+		<-_ eraseEl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_var:: rrel_erase:: .._arc_from_sientist_set_to_sientist;;
+
+		// Перейти к печати в терминал, что специалист успешно извлечен из множества.
+		_=> nrel_goto:: .._print_that_company_student_was_found;;
+	*);;
+
+	// Напечатать в терминал, что специалист успешно извлечен из множества.
+	_-> .._print_that_company_sientist_was_found
+	(*
+		<-_ printNl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: [Sientist was found in specified company];;
+
+		// Перейти к поиску используемых инструментов специалиста.
+		_=> nrel_goto:: .._search_scientists_used_pytorch;;
+	*);;
+	
+// ШАГ 6: НАЙТИ ИНСТРУМЕНТЫ У СПЕЦИАЛСТА
+	// Найти связку отношения rrel_uses для текущего специалиста.
+	_-> .._search_sientist_tools
+	(*
+		<-_ searchElStr5;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_var:: .._sientist;;
+		_-> rrel_2:: rrel_assign:: rrel_scp_var:: rrel_const:: rrel_common_arc:: .._arc_from_sientist_to_tool;;
+		_-> rrel_3:: rrel_assign:: rrel_scp_var:: rrel_const:: rrel_node:: rrel_node_link:: .._uses;;
+		_-> rrel_4:: rrel_assign:: rrel_scp_var:: rrel_const_perm_pos_arc:: .._arc_to_arc_from_student_to_uses;;
+		_-> rrel_5:: rrel_fixed:: rrel_scp_const:: rrel_uses;;
+
+		// Если средняя оценка найдена, то перейти к печати в терминал, что средняя оценка найдена.
+		_=> nrel_then:: .._print_that_tool_is_find;;
+		// Если средняя оценка не найдена, то перейти к печати в терминал, что средняя оценка не найдена.
+		_=> nrel_else:: .._print_that_tool_is_not_find;;
+	*);;
+
+	// Напечатать в терминал, что инструмент найден.
+	_-> .._print_that_tool_is_find
+	(*
+		<-_ printNl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: [Tool is found for specified sientist];;
+	*);;
+
+// ШАГ 7: ПРОВЕРКА ПРИНАДЛЕЖНОСТИ К КЛАССУ СПЕЦИАЛИСТОВ
+	// Проверить, что специалист принадлежит классу concept_data_sientist.
+	// Если специалист принадлежит классу concept_data_sientist, то добавить sc-дугу базового вида между ними
+	// в результирующее множество.
+	_-> .._check_sientist_class
+	(*
+		<-_ searchSetStr3;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: concept_data_sientist;;
+		_-> rrel_2:: rrel_assign:: rrel_scp_var:: rrel_const_perm_pos_arc:: .._arc_from_class_to_sientist;;
+		_-> rrel_3:: rrel_fixed:: rrel_scp_var:: .._sientist;;
+
+		_-> rrel_set_2:: rrel_fixed:: rrel_scp_var:: .._result_sientists;;
+
+		// Перейти к добавлению специалиста в результирующее множество.
+		_=> nrel_goto:: .._add_sientist_to_result_sientists_set;;
+	*);;
+// ШАГ 12: ДОБАВИТЬ СПЕЦИАЛИСТА В РЕЗУЛЬТИРУЮЩЕЕ МНОЖЕСТВО
+	// Создать sc-дугу базового вида от структуры в .._result_sientists к текущему специалисту.
+	_-> .._add_sientist_to_result_sientists_set
+	(*
+		<-_ genElStr3;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_var:: .._result_sientists;;
+		_-> rrel_2:: rrel_assign:: rrel_scp_var:: rrel_const_perm_pos_arc:: .._arc_from_result_sientists_set_to_sientist;;
+		_-> rrel_3:: rrel_fixed:: rrel_scp_var:: .._sientist;;
+
+		// Перейти к печати в терминал, что специалист успешно добавлен в результат.
+		_=> nrel_goto:: .._print_that_scientist_was_added_to_result_sientists_set;;
+	*);;
+
+	// Напечатать в терминал, что специалист успешно добавлен в результат.
+	_-> .._print_that_sientist_was_added_to_result_sientists_set
+	(*
+		<-_ printNl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: [Sientist was added to result sientists set];;
+
+		// Перейти к выбору следующего специалиста.
+		_=> nrel_goto:: .._get_next_sientist;;
+	*);;
+
+	// Напечатать в терминал, что инструменты не найдены.
+	_-> .._print_that_tool_is_not_found
+	(*
+		<-_ printNl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: [Tool is not found for specified sientist];;
+
+		// Перейти к выбору следующего специалиста.
+		_=> nrel_goto:: .._get_next_scientist;;
+	*);;
+
+	// Напечатать в терминал, что все специалисты в кампании были обработаны.
+	_-> .._print_that_all_sientists_were_iterated
+	(*
+		<-_ printNl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: [All sientists were iterated in specified company];;
+
+		// Перейти к удалению временного множества специалистов.
+		_=> nrel_goto:: .._erase_found_sientists_set;;
+	*);;
+
+	// Удалить временное множество специалистов.
+	_-> .._erase_found_sientists_set
+	(*
+		<-_ eraseEl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_var:: rrel_erase:: .._found_sientists;;
+
+		// Перейти к завершению программы.
+		_=> nrel_goto:: .._return_result;;
+	*);;
+
+	// Напечатать в терминал, что указанный аргумент не является кампанией.
+	_-> .._print_that_specified_argument_is_not_company
+	(*
+		<-_ printNl;;
+
+		_-> rrel_1:: rrel_fixed:: rrel_scp_const:: [Specified argument is not company];;
+
+		// Перейти к завершению программы.
+		_=> nrel_goto:: .._return_result;;
+	*);;
+
+	// Завершить программу.
+	_-> .._return_result
+	(*
+		<-_ return;;
+	*);;
+*);;
+*];;
+*);;
+*];;

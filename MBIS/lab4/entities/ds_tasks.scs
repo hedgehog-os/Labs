@@ -1,0 +1,47 @@
+regression
+<- concept_ds_task;
+=> nrel_main_idtf: 
+    [регрессия] 
+    (* <- lang_ru;; *);
+<= nrel_inclusion: 
+    concept_supervised_learning;;
+    
+classification
+<- concept_ds_task;
+=> nrel_main_idtf: 
+    [классификация] 
+    (* <- lang_ru;; *);
+<= nrel_inclusion: 
+    concept_supervised_learning;;
+
+clustering
+<- concept_ds_task;
+=> nrel_main_idtf: 
+    [кластеризация] 
+    (* <- lang_ru;; *);
+<= nrel_inclusion: 
+    concept_unsupervised_learning;;
+    
+computer_vision
+<- concept_ds_task;
+=> nrel_main_idtf: 
+    [компьютерное зрение] 
+    (* <- lang_ru;; *);
+<= nrel_inclusion: 
+    concept_deep_learning;;
+    
+nlp
+<- concept_ds_task;
+=> nrel_main_idtf: 
+    [обработка естественного языка] 
+    (* <- lang_ru;; *);
+<= nrel_inclusion: 
+    concept_deep_learning;;
+    
+regression
+<- concept_ds_task;
+=> nrel_main_idtf: 
+    [регрессия] 
+    (* <- lang_ru;; *);
+<= nrel_inclusion: 
+    concept_supervised_learning;;
