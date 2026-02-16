@@ -1,7 +1,0 @@
-__init__.py
-venv
-.pytest_cache
-__pycache__
-pytest.ini
-.coverage
-.gitignore
