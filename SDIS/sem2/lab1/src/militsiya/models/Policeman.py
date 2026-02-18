@@ -1,9 +1,8 @@
-class Officer:
+class Policeman:
     ranks = ("private", "lieutinant", "captain", "major", "colonel", "general")
-    specializations = ("investigation", "patrol", "district police officer", "operative")
     statuses = ("sick", "wickend", "vocation")
 
-    def __init__(self, lastname: str, rank: str, specialization: str, status: str):
+    def __init__(self, lastname: str, rank: str, status: str):
         self.lastname: str = lastname
 
         @property
@@ -31,17 +30,6 @@ class Officer:
         def rank(self, value):
             if value not in self.ranks:
                 raise TypeError("There is no such rank")
-            
-        self.specialization: str = specialization
-
-        @property
-        def specialization(self):
-            return self._specialization
-        
-        @specialization.setter
-        def specialization(self, value):
-            if value not in self.specializations:
-                raise TypeError("There is no such specialization")
             
         self.status: str = status
 
