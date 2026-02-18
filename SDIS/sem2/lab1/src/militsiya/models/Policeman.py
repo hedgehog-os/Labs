@@ -1,6 +1,9 @@
+import random
+from Citizen import Citizen
+
 class Policeman:
     ranks = ("private", "lieutinant", "captain", "major", "colonel", "general")
-    statuses = ("sick", "wickend", "vocation")
+    statuses = ("rest", "work")
 
     def __init__(self, lastname: str, rank: str, status: str):
         self.lastname: str = lastname
@@ -43,3 +46,14 @@ class Policeman:
                 raise TypeError("There is no such status")
             
         self.fatigue: int = 0
+        self.criminal: tuple[Citizen, int] = None
+
+    def arrest(self):
+        if self.criminal:
+            weights = [1 - (self.criminal[1]+ self.criminal[0]) / 10, (self.criminal[1]+ self.criminal[0]) / 10]
+            arrested = random.choice([True, False], weights=weights)
+
+            if arrested:
+                self.criminal = None
+                self.fatigue += 1
+                return True

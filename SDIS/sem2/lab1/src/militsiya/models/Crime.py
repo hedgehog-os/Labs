@@ -3,7 +3,7 @@ from Law import Law
 
 class Crime:
 
-    def __init__(self, crime: str, description: str, suspect: Citizen, law: Law, severity: int = 1):
+    def __init__(self, crime: str, description: str, suspect: Citizen, law: Law, guilt: bool = False, severity: int = 1):
         self.crime: str = crime
             
         self.description: str = description
@@ -21,4 +21,5 @@ class Crime:
 
         self.suspect: Citizen = suspect
         self.law: Law = law
+        self.guilt = guilt
 

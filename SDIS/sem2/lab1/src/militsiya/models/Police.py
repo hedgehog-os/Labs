@@ -19,5 +19,3 @@ class Police:
         self.policemen.remove(policeman)
         self.history.append(f"Fired policeman {policeman.lastname}")
 
-    def investigate(self):
-        pass
