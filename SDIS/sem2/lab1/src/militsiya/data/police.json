@@ -1,7 +1,5 @@
 {
-    "policemen": {
-        
-    },
+    "policemen": [],
     "laws": [],
     "security": 5,
     "history": []

@@ -43,4 +43,3 @@ class Policeman:
                 raise TypeError("There is no such status")
             
         self.fatigue: int = 0
-
