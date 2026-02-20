@@ -1,17 +1,15 @@
-import json
 import random
 from Crime import Crime
 
+# Получает список Crime и решает кто из граждан виновен, в результате создает tuple с Crime и его опасностью
 class Investigation:
-    def __init__(self, path: str):
-        with open(path, 'r', encoding='utf-8') as file:
-            data = json.load(file)
-            self.crimes: list[Crime] = data["crimes"]
+    def __init__(self, crimes: list[Crime]):
+        self._crimes: list[Crime] = crimes
     
     def investigate(self):
         criminals = []
 
-        for crime in self.crimes:
+        for crime in self._crimes:
             
             if crime.guilt:
                 continue

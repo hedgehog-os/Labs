@@ -1,16 +1,28 @@
 import random
-from Citizen import Citizen
+from Crime import Crime
+from typing import Union
 
+# Пресекает правонарушение, смотрит какие граждане виновны и арестует
 class Policeman:
-    ranks = ("private", "lieutinant", "captain", "major", "colonel", "general")
-    statuses = ("rest", "work")
 
-    def __init__(self, lastname: str, rank: str, status: str):
-        self.lastname: str = lastname
+    def __init__(self, lastname: str, zone: Union[str, int, float], is_work: bool = True):
+        self._lastname: str = lastname
+        self._zone: Union[str, int, float] = zone
+        self._is_work: bool = is_work
+        self._fatigue: int = 0
+        self._criminal: tuple[Crime, int] = None
 
         @property
+        def zone(self):
+            return self._zone
+        
+        @zone.setter
+        def zone(self, value):
+            self._zone = value
+        
+        @property
         def lastname(self):
-            return self._name
+            return self._lastname
         
         @lastname.setter
         def lastname(self, value):
@@ -23,37 +35,30 @@ class Policeman:
             elif len(value.strip()) < 2:
                 raise TypeError("Lastname must contain at least 2 characters")
             
-        self.rank: str = rank
-
-        @property
-        def rank(self):
-            return self._rank
-        
-        @rank.setter
-        def rank(self, value):
-            if value not in self.ranks:
-                raise TypeError("There is no such rank")
+            self._lastname = value.strip()
             
-        self.status: str = status
-
         @property
-        def status(self):
-            return self._status
+        def is_work(self):
+            return self._is_work
         
-        @status.setter
-        def status(self, value):
-            if value not in self.statuses:
-                raise TypeError("There is no such status")
-            
-        self.fatigue: int = 0
-        self.criminal: tuple[Citizen, int] = None
+        @is_work.setter
+        def is_work(self, value):
+            self._is_work = value
 
     def arrest(self):
-        if self.criminal:
-            weights = [1 - (self.criminal[1]+ self.criminal[0]) / 10, (self.criminal[1]+ self.criminal[0]) / 10]
+        if self._criminal:
+            weights = [1 - (self._fatigue + self._criminal[1]) / 20, (self._fatigue + self._criminal[1]) / 20]
             arrested = random.choice([True, False], weights=weights)
 
             if arrested:
-                self.criminal = None
-                self.fatigue += 1
+                self._criminal = None
+                self._fatigue += 1
                 return True
+            
+            else:
+                self.fatigue += 1
+                return False
+
+    def recovery(self):
+        self._fatigue = 0
+

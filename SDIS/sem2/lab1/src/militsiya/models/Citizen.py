@@ -1,6 +1,6 @@
 class Citizen:
-    def __init__(self, name: str, address: str):
-        self.name: str = name
+    def __init__(self, name: str):
+        self._name: str = name
 
         @property
         def name(self):
@@ -16,5 +16,3 @@ class Citizen:
             
             elif len(value.strip()) < 2:
                 raise TypeError("Name must contain at least 2 characters")
-            
-            self.address = address
