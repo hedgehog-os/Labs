@@ -23,6 +23,7 @@ def emulate_load():
             time.sleep(0.3)
             print("|")
 
+
 def main():
     data_dir = "data"
     os.makedirs(data_dir, exist_ok=True)
@@ -55,6 +56,96 @@ def main():
     laws            = loaded["laws.pkl"]
     security        = loaded["security.pkl"]
 
+    def write_statement():
+            try:
+                description = input("Write was happend: ")
+
+                zone = input("What zone?: ")
+
+                i = 0
+                for citizen in citizens:
+                    print(f"{i} - {citizen}")
+                    i += 1
+                
+                selected_citizen = int(input("Choose accused"))
+                suspect = citizens[selected_citizen]
+
+                print("What law was broken?:")
+                i = 0
+                for law in laws:
+                    print(f"{i} - {law}")
+                    i += 1
+                
+                selected_law = int(input("Choose law"))
+                law = laws[selected_law]
+                
+                application = Crime(suspect=suspect, description=description, zone=zone, law=law)
+                applications.append(application)
+
+                emulate_load()
+
+                history.append(f"The police report about {application.suspect} was successfully filed")
+                print(f"The police report about {application.suspect} was successfully filed")
+
+            except Exception as e:
+                    print(f"Error: {e}")
+
+    def delete_statement():
+        try:
+            i = 0
+            for application in applications:
+                print(f"{i} - {application}")
+                i += 1
+
+            application_index = int(input("Choose application: "))
+            applications.pop(application_index)
+            
+            history.append(f"Appliaction was successfully deleted")
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def show_statements():
+        try:
+            for application in applications:
+                print(f"{application}\n")
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def add_citizen():
+        try:
+            name = input("Enter citizen's name: ")
+            citizen = Citizen(name=name)
+            citizens.append(citizen)
+
+            history.append(f"Citizen was successfully added")
+            print("Citizen was successfully added")
+        
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def delete_citizen():
+        try:
+            i = 0
+            for citizen in citizens:
+                print(f"{i} - {citizen}")
+                i += 1
+
+            citizen_index = int(input("Choose citizen: "))
+            citizens.pop(citizen_index)
+            
+            history.append(f"Citizen was successfully deleted")
+        except Exception as e:
+            print(f"Error: {e}") 
+
+    def show_citizens():
+        try:
+            for citizen in citizens:
+                print(f"{citizen}\n")
+
+        except Exception as e:
+            print(f"Error: {e}")
+
     while True:
         print(
             """ 
@@ -69,7 +160,7 @@ def main():
         choice = int(input())
 
 
-#---------------------------------------------------------------------#
+#-----------------------------------------OPTION 1------------------------------------#
         
 
         if choice == 1:
@@ -78,66 +169,28 @@ def main():
                 """
                 1 - Write statement
                 2 - Delete statement
-                3 - Back
+                3 - Show statements
+                4 - Back
                 """)
             choice = int(input())
 
             if choice == 1:
-                try:
-                    description = input("Write was happend: ")
-
-                    zone = input("What zone?: ")
-
-                    i = 0
-                    for citizen in citizens:
-                        print(f"{i} - {citizen}")
-                        i += 1
-                    
-                    selected_citizen = int(input("Choose accused"))
-                    suspect = citizens[selected_citizen]
-
-                    print("What law was broken?:")
-                    i = 0
-                    for law in laws:
-                        print(f"{i} - {law}")
-                        i += 1
-                    
-                    selected_law = int(input("Choose law"))
-                    law = laws[selected_law]
-                    
-                    application = Crime(suspect=suspect, description=description, zone=zone, law=law)
-                    applications.append(application)
-
-                    emulate_load()
-
-                    history.append(f"The police report about {application.suspect} was successfully filed")
-                    print(f"The police report about {application.suspect} was successfully filed")
-
-                except Exception as e:
-                    print(f"Error: {e}")
+                write_statement()
 
             elif choice == 2:
-                try:
-                    i = 0
-                    for application in applications:
-                        print(f"{i} - {application}")
-                        i += 1
-
-                    application_index = int(input("Choose application: "))
-                    applications.pop(application_index)
-                    
-                    history.append(f"Appliaction was successfully deleted")
-                except Exception as e:
-                    print(f"Error: {e}")
+                delete_statement()
 
             elif choice == 3:
+                show_statements()
+
+            elif choice == 4:
                 continue
 
             else:
                 raise ValueError("Incorrect option")
                 
 
-#------------------------------------------------------------------------------------#
+#-----------------------------------------OPTION 2---------------------------------------#
 
 
         elif choice == 2:
@@ -155,7 +208,7 @@ def main():
                     print("History id empty")
                 else:
                     for h in history:
-                        print(h, "\n")
+                        print(f"{h}\n")
 
             elif choice == 2:
                 history.clear()
@@ -167,12 +220,33 @@ def main():
                 raise ValueError("Incorrect option")
 
 
-#-------------------------------------------------------------------------#
+#--------------------------------OPTION 4---------------------------------------#
 
 
-        elif choice == 3:
-            pass
+        elif choice == 4:
+            print(
+                """
+                1 - Add citizen
+                2 - Delete citizen
+                3 - Show citizens
+                4 - Back
+                """)
+            choice = int(input())
 
+            if choice == 1:
+                add_citizen()
+
+            elif choice == 2:
+                delete_citizen()
+
+            elif choice == 3:
+                show_citizens()
+
+            elif choice == 4:
+                continue
+
+            else:
+                raise ValueError("Incorrect option")
 
 #-------------------------------------------------------------------------#
 
