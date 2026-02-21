@@ -8,9 +8,10 @@ if TYPE_CHECKING:
 
 class Crime:
 # когда будет писаться заявление, то будет создаваться Crime, закидываться в crimes.bin 
-    def __init__(self, suspect: Citizen, description: str, law: Law):
+    def __init__(self, suspect: Citizen, description: str, zone: str, law: Law):
         self.description: str = description
         self.suspect: Citizen = suspect
+        self.zone: str = zone
         self.law: Law = law
 
         @property
