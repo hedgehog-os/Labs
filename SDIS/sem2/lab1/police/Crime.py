@@ -1,5 +1,5 @@
-from Citizen import Citizen
-from Law import Law
+from . import Citizen, Law
+
 
 class Crime:
 # когда будет писаться заявление, то будет создаваться Crime, закидываться в crimes.bin 

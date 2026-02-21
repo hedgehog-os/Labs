@@ -1,8 +1,8 @@
-from Crime import Crime
-from Citizen import Citizen
+from . import Crime, Citizen
+
 
 class Security:
-    def __init__(self, path):
+    def __init__(self):
         self.level: int = 1
 
     def eval(self, citizens: list[Citizen], crimes: list[Crime]):

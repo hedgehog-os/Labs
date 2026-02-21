@@ -1,5 +1,6 @@
 import random
-from Crime import Crime
+from . import Crime
+
 
 # Получает список Crime и решает кто из граждан виновен, в результате создает tuple с Crime и его опасностью
 class Investigation:

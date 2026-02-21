@@ -1,5 +1,6 @@
 import random
-from Crime import Crime
+from . import Crime
+
 from typing import Union
 
 # Пресекает правонарушение, смотрит какие граждане виновны и арестует

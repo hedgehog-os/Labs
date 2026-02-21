@@ -1,4 +1,5 @@
-from Policeman import Policeman
+from . import Policeman
+
 from typing import Union
 
 class Police:

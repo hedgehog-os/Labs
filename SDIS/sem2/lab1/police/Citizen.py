@@ -1,5 +1,4 @@
-from Law import Law
-from Crime import Crime
+from . import Crime, Law
 
 class Citizen:
     def __init__(self, name: str):
