@@ -30,10 +30,10 @@ class Policeman:
                 raise TypeError("Lastname must be string")
             
             elif not value.strip():
-                raise TypeError("Lastname can't be empty")
+                raise ValueError("Lastname can't be empty")
             
             elif len(value.strip()) < 2:
-                raise TypeError("Lastname must contain at least 2 characters")
+                raise ValueError("Lastname must contain at least 2 characters")
             
             self._lastname = value.strip()
             
@@ -45,10 +45,10 @@ class Policeman:
         def is_work(self, value):
             self._is_work = value
 
-    def arrest(self):
+    def arrest(self) -> bool:
         if self._criminal:
             weights = [1 - (self._fatigue + self._criminal[1]) / 20, (self._fatigue + self._criminal[1]) / 20]
-            arrested = random.choice([True, False], weights=weights)
+            arrested = random.choices([True, False], weights=weights)[0]
 
             if arrested:
                 self._criminal = None
@@ -56,8 +56,11 @@ class Policeman:
                 return True
             
             else:
-                self.fatigue += 1
+                self._fatigue += 1
                 return False
+
+    def assign_crime(self, criminal: tuple[Crime, int]):
+        self._criminal = criminal
 
     def recovery(self):
         self._fatigue = 0
