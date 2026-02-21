@@ -14,9 +14,12 @@ class Crime:
         self.zone: str = zone
         self.law: Law = law
 
-        @property
-        def severity(self):
-            return self.law.severity
+    @property
+    def severity(self):
+        return self.law.severity
+    
+    def __repr__(self):
+        return f"Crime(description={self.description!r}, suspect={self.suspect!r}, zone={self.zone!r}, law={self.law!r})"
         
 
         
