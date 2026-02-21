@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Union
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -19,20 +17,26 @@ class Police:
         def zones(self, value):
             self._zones = value
     
-    def create_zone(self, zone: Union[str, int, float]):
+    def create_zone(self, zone: str):
         self._zones[str(zone)] = {"policemen": [], "crimes": [], "security": 1.0}
 
-    def hire(self, policeman: Policeman, zone: Union[str, int, float]):
+    def hire(self, policeman: Policeman, zone: str):
         self._zones[str(zone)]["policemen"].append(policeman)
-        policeman.zone = zone
+        policeman._zone = zone
         
     def fire(self, policeman: Policeman):
-        self._zones[policeman.zone()]["policemen"].remove(policeman)
+        self._zones[policeman._zone]["policemen"].remove(policeman)
 
-    def relocate(self, relocated_policemen: list[Policeman], target_zone: Union[str, int, float]):
+    def relocate(self, relocated_policemen: list[Policeman], target_zone: str):
         for policeman in relocated_policemen:
-            self._zones[policeman.zone()]["policemen"].remove(policeman)
+            self._zones[policeman._zone]["policemen"].remove(policeman)
             policeman.zone = target_zone
-            self._zones[policeman.zone()]["policemen"].append(policeman)
+            self._zones[policeman._zone]["policemen"].append(policeman)
 
+    def get_policemen(self) -> list[Policeman]:
+        all_policemen = []
+        for zone in self._zones.values():
+            for policeman in zone["policemen"]:
+                all_policemen.append(policeman)
+        return all_policemen
 

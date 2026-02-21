@@ -71,3 +71,8 @@ class Policeman:
     def recovery(self):
         self._fatigue = 0
 
+    def __repr__(self):
+        status = "on duty" if self._is_work else "off duty"
+        fatigue = "🟢" if self._fatigue < 3 else "🔴"
+        return f"Policeman({self._lastname}, zone={self._zone}, {status}, fatigue={fatigue})"
+

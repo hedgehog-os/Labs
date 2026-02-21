@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 # Получает список Crime и решает кто из граждан виновен, в результате создает tuple с Crime и его опасностью
 class Investigation:
-    def __init__(self, crime: Crime):
+    def __init__(self, crime: list[Crime]):
         self._crime: list[Crime] = crime
     
     def investigate(self) -> tuple:

@@ -146,6 +146,31 @@ def main():
         except Exception as e:
             print(f"Error: {e}")
 
+    def add_policeman():
+        lastname = input("Enter policeman lastname: ")
+        zone = input("Enter working zone")
+
+        police.hire(lastname=lastname, zone=zone)
+
+    def relocate_policemen():
+        policemen = police.get_policemen()
+
+        print("All policemen:")
+        i = 0
+        for policeman in policemen:
+            print(f"{i} - {policeman}\n")
+            i += 1
+
+        indexes = input("Select policemen you want to relocate(example: <1 3 7>): ")
+        try:
+            relocated_policemen = [policemen[int(index)] for index in indexes.split()]
+        except ValueError:
+            print("Invalid input: all values must be integers")
+            relocated_policemen = []
+
+        new_zone = input("Enter new zone: ")
+        police.relocate(relocated_policemen=relocated_policemen, target_zone=new_zone)
+            
     while True:
         print(
             """ 
@@ -218,6 +243,29 @@ def main():
 
             else:
                 raise ValueError("Incorrect option")
+
+
+#------------------------------------------------------------------------------#
+
+
+        elif choice == 3:
+            print(
+                """
+                1 - Add policeman
+                2 - Relocate policemen(policeman)
+                3 - Investigate offense
+                4 - Arrest criminals
+                """)
+            choice = int(input("Choose option: "))
+
+            if choice == 1:
+                add_policeman()
+
+            elif choice == 2:
+                relocate_policemen()
+
+
+            
 
 
 #--------------------------------OPTION 4---------------------------------------#
