@@ -40,3 +40,5 @@ class Police:
                 all_policemen.append(policeman)
         return all_policemen
 
+    def add_zone(self, new_zone: str):
+        self._zones[new_zone] = {"policemen": [], "crimes": [], "security": 1}

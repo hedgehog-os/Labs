@@ -148,9 +148,38 @@ def main():
 
     def add_policeman():
         lastname = input("Enter policeman lastname: ")
-        zone = input("Enter working zone")
+        zone = input("Enter working zone: ")
+        policeman = Policeman(lastname=lastname, zone=zone)
+        police.hire(policeman=policeman, zone=zone)
 
-        police.hire(lastname=lastname, zone=zone)
+        history.append(f"Policeman {policeman._lastname} hired to police")
+        print(f"Policeman {policeman._lastname} hired to police")
+
+    def add_zone():
+        new_zone = input("Enter new zone: ")
+        police.add_zone(new_zone=new_zone)
+
+    def show_policemen():
+        policemen = police.get_policemen()
+        for policeman in policemen:
+            print(policeman)
+
+    def show_info():
+        if not police._zones:
+            print("No zones registered.")
+            return
+
+        for zone_id, data in sorted(police._zones.items(), key=lambda x: int(x[0]) if x[0].isdigit() else x[0]):
+            print(f"\n{'='*40}")
+            print(f"Zone {zone_id}")
+            print(f"{'='*40}")
+            print(f"  Policemen: {len(data['policemen'])}")
+            for policeman in data["policemen"]:
+                print(f"    - {policeman}")
+            print(f"  Crimes: {len(data['crimes'])}")
+            for crime in data["crimes"]:
+                print(f"    - {crime}")
+            print(f"  Security level: {data['security']}")
 
     def relocate_policemen():
         policemen = police.get_policemen()
@@ -229,8 +258,8 @@ def main():
             choice = int(input())
 
             if choice == 1:
-                if history.empy():
-                    print("History id empty")
+                if not history:
+                    print("History is empty")
                 else:
                     for h in history:
                         print(f"{h}\n")
@@ -251,17 +280,30 @@ def main():
         elif choice == 3:
             print(
                 """
-                1 - Add policeman
-                2 - Relocate policemen(policeman)
-                3 - Investigate offense
-                4 - Arrest criminals
+                1 - Hire policeman
+                2 - Fire policeman
+                3 - Add zone
+                4 - Show policemen
+                5 - Show info
+                6 - Relocate policemen(policeman)
+                7 - Investigate offense
+                8 - Arrest criminals
                 """)
             choice = int(input("Choose option: "))
 
             if choice == 1:
                 add_policeman()
 
-            elif choice == 2:
+            elif choice == 3:
+                add_zone()
+
+            elif choice == 4:
+                show_policemen()
+
+            elif choice == 5:
+                show_info()
+
+            elif choice == 6:
                 relocate_policemen()
 
 
@@ -300,20 +342,18 @@ def main():
 
 
         elif choice == 6:
-            with open("data/police.pkl", "wb") as file:
-                pickle.dump(police, file)
-    
-            with open("data/history.pkl", "wb") as file:
-                pickle.dump(history, file)
+            data_to_save = {
+                "data/police.pkl": police,
+                "data/history.pkl": history,
+                "data/citizens.pkl": citizens,
+                "data/laws.pkl": laws,
+                "data/applications.pkl": applications,
+                "data/security.pkl": security,
+            }
 
-            with open("data/citizens.pkl", "wb") as file:
-                pickle.dump(citizens, file)
-
-            with open("data/laws.pkl", "wb") as file:
-                pickle.dump(laws, file)
-
-            with open("data/security.pkl", "wb") as file:
-                pickle.dump(security, file)
+            for path, obj in data_to_save.items():
+                with open(path, "wb") as file:
+                    pickle.dump(obj, file)
 
             break
 
