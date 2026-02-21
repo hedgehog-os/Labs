@@ -1,12 +1,6 @@
 import pickle
 import os
-from police import Police
-from police import Policeman
-from police import Citizen
-from police import Crime
-from police import Investigation
-from police import Law
-from police import Security
+from police import *
 
 def main():
     data_dir = "data"

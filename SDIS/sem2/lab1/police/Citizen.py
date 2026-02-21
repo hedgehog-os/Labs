@@ -1,4 +1,10 @@
-from . import Crime, Law
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .Crime import Crime
+    from .Law import Law
 
 class Citizen:
     def __init__(self, name: str):

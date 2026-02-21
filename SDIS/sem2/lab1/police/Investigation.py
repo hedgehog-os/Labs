@@ -1,6 +1,11 @@
-import random
-from . import Crime
+from __future__ import annotations
 
+import random
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .Crime import Crime
 
 # Получает список Crime и решает кто из граждан виновен, в результате создает tuple с Crime и его опасностью
 class Investigation:

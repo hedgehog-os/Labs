@@ -1,7 +1,12 @@
-import random
-from . import Crime
+from __future__ import annotations
 
+import random
 from typing import Union
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .Crime import Crime
 
 # Пресекает правонарушение, смотрит какие граждане виновны и арестует
 class Policeman:

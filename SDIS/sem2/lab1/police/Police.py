@@ -1,6 +1,11 @@
-from . import Policeman
+from __future__ import annotations
 
 from typing import Union
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .Policeman import Policeman
 
 class Police:
     def __init__(self, zones = None):

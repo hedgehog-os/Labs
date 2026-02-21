@@ -1,5 +1,10 @@
-from . import Citizen, Law
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .Citizen import Citizen
+    from .Law import Law
 
 class Crime:
 # когда будет писаться заявление, то будет создаваться Crime, закидываться в crimes.bin 
