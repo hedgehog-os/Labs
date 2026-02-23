@@ -1,3 +1,5 @@
+"""Police department management module."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -5,40 +7,108 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .Policeman import Policeman
 
+
+class PoliceError(Exception):
+    """Base exception for police-related errors."""
+    pass
+
+
+class ZoneNotFoundError(PoliceError):
+    """Raised when a zone is not found."""
+    pass
+
+
+class PolicemanNotFoundError(PoliceError):
+    """Raised when a policeman is not found."""
+    pass
+
+
 class Police:
-    def __init__(self, zones = None):
-        self._zones = zones or {}
+    """Represents a police department managing zones and officers."""
 
-        @property
-        def zones(self):
-            return self._zones
-        
-        @zones.setter
-        def zones(self, value):
-            self._zones = value
-    
-    def create_zone(self, zone: str):
-        self._zones[str(zone)] = {"policemen": [], "crimes": [], "security": 1.0}
+    def __init__(self, zones: dict[str, dict] | None = None) -> None:
+        self._zones: dict[str, dict] = zones or {}
 
-    def hire(self, policeman: Policeman, zone: str):
-        self._zones[str(zone)]["policemen"].append(policeman)
-        policeman._zone = zone
-        
-    def fire(self, policeman: Policeman):
-        self._zones[policeman._zone]["policemen"].remove(policeman)
+    @property
+    def zones(self) -> dict[str, dict]:
+        """Return all zones."""
+        return self._zones
 
-    def relocate(self, relocated_policemen: list[Policeman], target_zone: str):
+    @zones.setter
+    def zones(self, value: dict[str, dict]) -> None:
+        """Set all zones."""
+        self._zones = value
+
+    def create_zone(self, zone: str) -> None:
+        """Create a new zone with default values."""
+        zone_key = str(zone)
+        if zone_key in self._zones:
+            raise PoliceError(f"Zone '{zone}' already exists")
+        self._zones[zone_key] = {"policemen": [], "crimes": [], "security": 1.0}
+
+    def add_zone(self, new_zone: str) -> None:
+        """Add a new zone (alias for create_zone)."""
+        self.create_zone(new_zone)
+
+    def has_zone(self, zone: str) -> bool:
+        """Check if a zone exists."""
+        return str(zone) in self._zones
+
+    def hire(self, policeman: Policeman, zone: str) -> None:
+        """Hire a policeman to a specific zone."""
+        zone_key = str(zone)
+        if zone_key not in self._zones:
+            raise ZoneNotFoundError(f"Zone '{zone}' does not exist")
+        self._zones[zone_key]["policemen"].append(policeman)
+        policeman.zone = zone_key
+
+    def fire(self, policeman: Policeman) -> None:
+        """Fire a policeman from the police department."""
+        zone_key = policeman.zone
+        if zone_key not in self._zones:
+            raise ZoneNotFoundError(f"Zone '{zone_key}' does not exist")
+        if policeman not in self._zones[zone_key]["policemen"]:
+            raise PolicemanNotFoundError(f"Policeman '{policeman.lastname}' not found in zone '{zone_key}'")
+        self._zones[zone_key]["policemen"].remove(policeman)
+        policeman.is_work = False
+
+    def relocate(self, relocated_policemen: list[Policeman], target_zone: str) -> None:
+        """Relocate policemen to a new zone."""
+        if target_zone not in self._zones:
+            raise ZoneNotFoundError(f"Target zone '{target_zone}' does not exist")
         for policeman in relocated_policemen:
-            self._zones[policeman._zone]["policemen"].remove(policeman)
+            old_zone = policeman.zone
+            if old_zone not in self._zones:
+                raise ZoneNotFoundError(f"Current zone '{old_zone}' does not exist")
+            if policeman in self._zones[old_zone]["policemen"]:
+                self._zones[old_zone]["policemen"].remove(policeman)
             policeman.zone = target_zone
-            self._zones[policeman._zone]["policemen"].append(policeman)
+            self._zones[target_zone]["policemen"].append(policeman)
 
     def get_policemen(self) -> list[Policeman]:
-        all_policemen = []
-        for zone in self._zones.values():
-            for policeman in zone["policemen"]:
-                all_policemen.append(policeman)
+        """Get all policemen from all zones."""
+        all_policemen: list[Policeman] = []
+        for zone_data in self._zones.values():
+            all_policemen.extend(zone_data["policemen"])
         return all_policemen
 
-    def add_zone(self, new_zone: str):
-        self._zones[new_zone] = {"policemen": [], "crimes": [], "security": 1}
+    def get_policemen_by_zone(self, zone: str) -> list[Policeman]:
+        """Get all policemen from a specific zone."""
+        if zone not in self._zones:
+            raise ZoneNotFoundError(f"Zone '{zone}' does not exist")
+        return self._zones[zone]["policemen"].copy()
+
+    def add_crime_to_zone(self, zone: str, crime: object) -> None:
+        """Add a crime record to a zone."""
+        if zone not in self._zones:
+            raise ZoneNotFoundError(f"Zone '{zone}' does not exist")
+        self._zones[zone]["crimes"].append(crime)
+
+    def get_crimes_by_zone(self, zone: str) -> list:
+        """Get all crimes from a specific zone."""
+        if zone not in self._zones:
+            raise ZoneNotFoundError(f"Zone '{zone}' does not exist")
+        return self._zones[zone]["crimes"].copy()
+
+    def __repr__(self) -> str:
+        return f"Police(zones={list(self._zones.keys())})"

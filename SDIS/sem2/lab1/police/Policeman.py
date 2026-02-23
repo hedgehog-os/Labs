@@ -1,78 +1,126 @@
+"""Policeman module representing law enforcement officers."""
+
 from __future__ import annotations
 
 import random
-from typing import Union
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .Crime import Crime
 
-# Пресекает правонарушение, смотрит какие граждане виновны и арестует
-class Policeman:
 
-    def __init__(self, lastname: str, zone: Union[str, int, float], is_work: bool = True):
+class PolicemanError(Exception):
+    """Base exception for policeman-related errors."""
+    pass
+
+
+class Policeman:
+    """Represents a police officer who can arrest criminals and investigate crimes."""
+
+    def __init__(
+        self,
+        lastname: str,
+        zone: str | int | float,
+        is_work: bool = True
+    ) -> None:
+        # Validate lastname on initialization
+        if not isinstance(lastname, str):
+            raise TypeError("Lastname must be a string")
+        if not lastname.strip():
+            raise ValueError("Lastname cannot be empty")
+        if len(lastname.strip()) < 2:
+            raise ValueError("Lastname must contain at least 2 characters")
+        
         self._lastname: str = lastname
-        self._zone: Union[str, int, float] = zone
+        self._zone: str | int | float = zone
         self._is_work: bool = is_work
         self._fatigue: int = 0
-        self._criminal: tuple[Crime, int] = None
+        self._criminal: tuple[Crime, int] | None = None
 
-        @property
-        def zone(self):
-            return self._zone
-        
-        @zone.setter
-        def zone(self, value):
-            self._zone = value
-        
-        @property
-        def lastname(self):
-            return self._lastname
-        
-        @lastname.setter
-        def lastname(self, value):
-            if not isinstance(value, str):
-                raise TypeError("Lastname must be string")
-            
-            elif not value.strip():
-                raise ValueError("Lastname can't be empty")
-            
-            elif len(value.strip()) < 2:
-                raise ValueError("Lastname must contain at least 2 characters")
-            
-            self._lastname = value.strip()
-            
-        @property
-        def is_work(self):
-            return self._is_work
-        
-        @is_work.setter
-        def is_work(self, value):
-            self._is_work = value
+    @property
+    def zone(self) -> str | int | float:
+        """Return the officer's zone."""
+        return self._zone
+
+    @zone.setter
+    def zone(self, value: str | int | float) -> None:
+        """Set the officer's zone."""
+        self._zone = value
+
+    @property
+    def lastname(self) -> str:
+        """Return the officer's lastname."""
+        return self._lastname
+
+    @lastname.setter
+    def lastname(self, value: str) -> None:
+        """Set the officer's lastname with validation."""
+        if not isinstance(value, str):
+            raise TypeError("Lastname must be a string")
+        if not value.strip():
+            raise ValueError("Lastname cannot be empty")
+        if len(value.strip()) < 2:
+            raise ValueError("Lastname must contain at least 2 characters")
+        self._lastname = value.strip()
+
+    @property
+    def is_work(self) -> bool:
+        """Return whether the officer is on duty."""
+        return self._is_work
+
+    @is_work.setter
+    def is_work(self, value: bool) -> None:
+        """Set the officer's work status."""
+        self._is_work = value
+
+    @property
+    def fatigue(self) -> int:
+        """Return the officer's fatigue level."""
+        return self._fatigue
 
     def arrest(self) -> bool:
-        if self._criminal:
-            weights = [1 - (self._fatigue + self._criminal[1]) / 20, (self._fatigue + self._criminal[1]) / 20]
-            arrested = random.choices([True, False], weights=weights)[0]
+        """
+        Attempt to arrest the assigned criminal.
+        
+        Returns:
+            bool: True if arrest was successful, False otherwise.
+        """
+        if not self._criminal:
+            return False
+        
+        crime, severity = self._criminal
+        # Higher fatigue and severity reduce success chance
+        success_chance = 1 - (self._fatigue + severity) / 20
+        success_chance = max(0.1, min(0.9, success_chance))  # Clamp between 0.1 and 0.9
+        
+        arrested = random.random() < success_chance
+        
+        if arrested:
+            self._criminal = None
+        
+        self._fatigue += 1
+        return arrested
 
-            if arrested:
-                self._criminal = None
-                self._fatigue += 1
-                return True
-            
-            else:
-                self._fatigue += 1
-                return False
-
-    def assign_crime(self, criminal: tuple[Crime, int]):
+    def assign_crime(self, criminal: tuple[Crime, int]) -> None:
+        """Assign a crime-criminal tuple to the officer for arrest."""
         self._criminal = criminal
 
-    def recovery(self):
+    @property
+    def has_assignment(self) -> bool:
+        """Check if the officer has an assigned criminal."""
+        return self._criminal is not None
+
+    def recovery(self) -> None:
+        """Reset officer's fatigue to zero."""
         self._fatigue = 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         status = "on duty" if self._is_work else "off duty"
-        fatigue = "🟢" if self._fatigue < 3 else "🔴"
-        return f"Policeman({self._lastname}, zone={self._zone}, {status}, fatigue={fatigue})"
+        fatigue_icon = "🟢" if self._fatigue < 3 else "🔴"
+        return (
+            f"Policeman(lastname={self._lastname!r}, zone={self._zone!r}, "
+            f"{status}, fatigue={fatigue_icon})"
+        )
 
+    def __str__(self) -> str:
+        return f"Officer {self._lastname} (Zone: {self._zone})"

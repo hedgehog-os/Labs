@@ -1,0 +1,68 @@
+@startuml Police Management System - State Diagram
+skinparam stateFontStyle bold
+skinparam defaultFontName "Segoe UI"
+skinparam shadowing false
+
+title Policeman State Diagram
+
+[*] --> OffDuty : Initial state
+
+state OffDuty {
+  [*] --> Idle
+  Idle --> Assigned : receive_crime_assignment()
+}
+
+state OnDuty {
+  [*] --> Idle
+  Idle --> Patrolling : start_patrol()
+  Patrolling --> Idle : finish_patrol()
+  Idle --> Assigned : receive_crime_assignment()
+}
+
+state Assigned {
+  [*] --> Investigating
+  Investigating --> AttemptingArrest : suspect_identified
+  AttemptingArrest --> Success : arrest() succeeds
+  AttemptingArrest --> Failed : arrest() fails
+  Success --> [*]
+  Failed --> [*]
+}
+
+OffDuty --> OnDuty : hire() / set is_work=true
+OnDuty --> OffDuty : fire() / set is_work=false
+
+OnDuty --> Assigned : investigate_crimes()
+Assigned --> OnDuty : complete_arrest
+
+state AttemptingArrest {
+  state if_arrest_successful <<choice>>
+  
+  [*] --> if_arrest_successful
+  if_arrest_successful --> Success : [success]
+  if_arrest_successful --> Failed : [failure]
+}
+
+note right of OffDuty
+  Policeman is not
+  currently working
+end note
+
+note right of OnDuty
+  Policeman is active
+  and can perform duties
+end note
+
+note bottom of Assigned
+  Officer has been assigned
+  a criminal to apprehend
+  Success depends on fatigue
+  and crime severity
+end note
+
+note right of Failed
+  Arrest failed, officer
+  fatigue increases
+  Can retry after recovery
+end note
+
+@enduml

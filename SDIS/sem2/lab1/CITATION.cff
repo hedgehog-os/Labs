@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Police Management System"
+abstract: "A command-line application for managing police departments, crime investigations, and public security."
+version: 0.1.0
+authors:
+  - family-names: "Mukhamedzianau"
+    given-names: "Egor"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+license: MIT
+repository-code: "https://github.com/your-username/police-management-system"
+keywords:
+  - "police"
+  - "management"
+  - "crime"
+  - "investigation"
+  - "CLI"
+  - "python"
+language: "en"

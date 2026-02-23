@@ -1,0 +1,47 @@
+@startuml Police Management System - Sequence Diagram
+skinparam defaultFontName "Segoe UI"
+skinparam shadowing false
+
+title Crime Investigation Process
+
+participant "Citizen" as C
+participant "Police System" as PS
+participant "Police" as P
+participant "Investigation" as I
+participant "Policeman" as PO
+
+== Crime Reporting ==
+C -> PS: submit_application()
+PS -> PS: create Crime object
+PS -> P: add_crime_to_zone()
+PS --> C: confirmation
+
+== Investigation Phase ==
+PS -> I: investigate(crimes)
+I -> I: analyze severity
+I --> PS: return (crime, severity)
+
+== Arrest Assignment ==
+PS -> P: get_policemen()
+P --> PS: list of officers
+PS -> PO: assign_crime((crime, severity))
+PO -> PO: store criminal assignment
+
+== Arrest Attempt ==
+PS -> PO: arrest()
+PO -> PO: calculate success chance
+alt Arrest Successful
+  PO --> PS: return True
+  PO -> PO: clear criminal assignment
+else Arrest Failed
+  PO --> PS: return False
+  PO -> PO: increase fatigue
+end
+
+PO -> PO: recovery()
+
+== Update Security ==
+PS -> PS: update security level
+PS --> C: case closed notification
+
+@enduml

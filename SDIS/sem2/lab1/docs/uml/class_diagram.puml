@@ -1,0 +1,132 @@
+@startuml Police Management System - Class Diagram
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Segoe UI"
+skinparam classFontStyle bold
+skinparam shadowing false
+
+' Package structure
+package "police" {
+  
+  class Police {
+    - _zones: dict[str, dict]
+    + __init__(zones: dict | None)
+    + zones: dict
+    + create_zone(zone: str): void
+    + add_zone(new_zone: str): void
+    + has_zone(zone: str): bool
+    + hire(policeman: Policeman, zone: str): void
+    + fire(policeman: Policeman): void
+    + relocate(policemen: list[Policeman], target_zone: str): void
+    + get_policemen(): list[Policeman]
+    + get_policemen_by_zone(zone: str): list[Policeman]
+    + add_crime_to_zone(zone: str, crime: Crime): void
+    + get_crimes_by_zone(zone: str): list[Crime]
+  }
+
+  class Policeman {
+    - _lastname: str
+    - _zone: str | int | float
+    - _is_work: bool
+    - _fatigue: int
+    - _criminal: tuple[Crime, int] | None
+    + lastname: str
+    + zone: str | int | float
+    + is_work: bool
+    + fatigue: int
+    + has_assignment: bool
+    + arrest(): bool
+    + assign_crime(criminal: tuple[Crime, int]): void
+    + recovery(): void
+  }
+
+  class Citizen {
+    - _name: str
+    + name: str
+    + submit_application(suspect: Citizen, description: str, zone: str, law: Law): Crime
+  }
+
+  class Crime {
+    - description: str
+    - suspect: Citizen
+    - zone: str
+    - law: Law
+    + severity: int
+  }
+
+  class Law {
+    - _article: int
+    - _desc: str
+    - _severity: int
+    + article: int
+    + desc: str
+    + severity: int
+  }
+
+  class Investigation {
+    - _crimes: list[Crime]
+    + crimes: list[Crime]
+    + investigate(): tuple[Crime, int] | None
+    + investigate_all(): list[tuple[Crime, int]]
+  }
+
+  class Security {
+    - _level: float
+    + level: float
+    + eval(citizens: list[Citizen], crimes: list[Crime]): float
+    + decrease(amount: float): void
+    + increase(amount: float): void
+  }
+}
+
+package "exceptions" {
+  class PoliceError {
+  }
+  class ZoneNotFoundError {
+  }
+  class PolicemanNotFoundError {
+  }
+  class CitizenError {
+  }
+  class LawError {
+  }
+  class InvestigationError {
+  }
+}
+
+' Inheritance relationships
+PoliceError <|-- ZoneNotFoundError
+PoliceError <|-- PolicemanNotFoundError
+Exception <|-- PoliceError
+Exception <|-- CitizenError
+Exception <|-- LawError
+Exception <|-- InvestigationError
+
+' Association relationships
+Police "1" *-- "0..*" Zone : manages
+Police "1" --> "0..*" Policeman : employs
+Policeman "0..*" --> "1" Zone : assigned_to
+Policeman "0..*" --> "0..1" Crime : investigates
+Citizen "1" --> "0..*" Crime : reports
+Crime "0..*" --> "1" Citizen : involves_suspect
+Crime "0..*" --> "1" Law : violates
+Investigation "1" --> "1..*" Crime : analyzes
+Security "1" ..> "0..*" Citizen : evaluates
+Security "1" ..> "0..*" Crime : evaluates
+
+' Note
+note right of Police
+  Main container for managing
+  police zones and officers
+end note
+
+note right of Policeman
+  Can arrest criminals and
+  has fatigue mechanic
+end note
+
+note bottom of Crime
+  Created when citizen
+  files a report
+end note
+
+@enduml
