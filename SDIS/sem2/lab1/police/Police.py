@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .Policeman import Policeman
+    from .Crime import Crime
 
 
 class PoliceError(Exception):
@@ -44,7 +45,7 @@ class Police:
         zone_key = str(zone)
         if zone_key in self._zones:
             raise PoliceError(f"Zone '{zone}' already exists")
-        self._zones[zone_key] = {"policemen": [], "crimes": [], "security": 1.0}
+        self._zones[zone_key] = {"policemen": [], "security": 1.0}
 
     def add_zone(self, new_zone: str) -> None:
         """Add a new zone (alias for create_zone)."""
@@ -77,13 +78,17 @@ class Police:
         if target_zone not in self._zones:
             raise ZoneNotFoundError(f"Target zone '{target_zone}' does not exist")
         for policeman in relocated_policemen:
-            old_zone = policeman.zone
+            old_zone = str(policeman.zone)
             if old_zone not in self._zones:
                 raise ZoneNotFoundError(f"Current zone '{old_zone}' does not exist")
+            # Remove from old zone (if present)
             if policeman in self._zones[old_zone]["policemen"]:
                 self._zones[old_zone]["policemen"].remove(policeman)
+            # Set new zone and add to target
             policeman.zone = target_zone
-            self._zones[target_zone]["policemen"].append(policeman)
+            # Avoid duplicates - check if already in target zone
+            if policeman not in self._zones[target_zone]["policemen"]:
+                self._zones[target_zone]["policemen"].append(policeman)
 
     def get_policemen(self) -> list[Policeman]:
         """Get all policemen from all zones."""
@@ -98,17 +103,30 @@ class Police:
             raise ZoneNotFoundError(f"Zone '{zone}' does not exist")
         return self._zones[zone]["policemen"].copy()
 
-    def add_crime_to_zone(self, zone: str, crime: object) -> None:
-        """Add a crime record to a zone."""
-        if zone not in self._zones:
-            raise ZoneNotFoundError(f"Zone '{zone}' does not exist")
-        self._zones[zone]["crimes"].append(crime)
+    def get_crimes_by_zone(self, zone: str, all_crimes: list[Crime]) -> list[Crime]:
+        """Get all crimes for a specific zone from the applications list."""
+        return [c for c in all_crimes if c.zone == zone]
 
-    def get_crimes_by_zone(self, zone: str) -> list:
-        """Get all crimes from a specific zone."""
+    def get_all_crimes(self, applications: list[Crime]) -> list[Crime]:
+        """Get all crimes from applications."""
+        return applications.copy()
+
+    def update_zone_security(self, zone: str, citizen_count: int, crime_count: int) -> None:
+        """Update security level for a specific zone."""
         if zone not in self._zones:
             raise ZoneNotFoundError(f"Zone '{zone}' does not exist")
-        return self._zones[zone]["crimes"].copy()
+        if crime_count == 0:
+            self._zones[zone]["security"] = 10.0
+        elif citizen_count == 0:
+            self._zones[zone]["security"] = 0.0
+        else:
+            self._zones[zone]["security"] = round(citizen_count / crime_count, 2)
+
+    def update_all_zones_security(self, citizen_count: int, crimes_by_zone: dict[str, int]) -> None:
+        """Update security levels for all zones."""
+        for zone in self._zones:
+            crime_count = crimes_by_zone.get(zone, 0)
+            self.update_zone_security(zone, citizen_count, crime_count)
 
     def __repr__(self) -> str:
         return f"Police(zones={list(self._zones.keys())})"

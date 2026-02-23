@@ -2,46 +2,65 @@
 skinparam defaultFontName "Segoe UI"
 skinparam shadowing false
 
-title Crime Investigation Process
+title Crime Investigation and Arrest Process
 
-participant "Citizen" as C
-participant "Police System" as PS
-participant "Police" as P
+participant "User" as U
+participant "PoliceSystem" as PS
 participant "Investigation" as I
-participant "Policeman" as PO
-
-== Crime Reporting ==
-C -> PS: submit_application()
-PS -> PS: create Crime object
-PS -> P: add_crime_to_zone()
-PS --> C: confirmation
+participant "Policeman" as P
+participant "Security" as S
 
 == Investigation Phase ==
-PS -> I: investigate(crimes)
-I -> I: analyze severity
-I --> PS: return (crime, severity)
+U -> PS: investigate --arrest
+PS -> I: investigate_all()
+I --> PS: list of (crime, severity)
 
-== Arrest Assignment ==
-PS -> P: get_policemen()
-P --> PS: list of officers
-PS -> PO: assign_crime((crime, severity))
-PO -> PO: store criminal assignment
-
-== Arrest Attempt ==
-PS -> PO: arrest()
-PO -> PO: calculate success chance
-alt Arrest Successful
-  PO --> PS: return True
-  PO -> PO: clear criminal assignment
-else Arrest Failed
-  PO --> PS: return False
-  PO -> PO: increase fatigue
+== Assignment Phase ==
+loop For each guilty finding
+    PS -> PS: Find available officer
+    PS -> P: assign_crime((crime, severity))
+    P -> P: Store criminal assignment
 end
 
-PO -> PO: recovery()
+== Arrest Phase ==
+PS -> PS: _perform_arrests_and_cleanup()
+loop For each assigned officer
+    PS -> P: arrest()
+    alt Arrest Successful
+        P --> PS: True
+        P -> P: Clear criminal assignment
+        P -> P: Increase fatigue
+    else Arrest Failed
+        P --> PS: False
+        P -> P: Increase fatigue
+    end
+end
 
-== Update Security ==
-PS -> PS: update security level
-PS --> C: case closed notification
+== Cleanup Phase ==
+PS -> PS: Remove solved crimes from applications
+PS -> S: update_all_zones_security()
+S --> PS: Updated security levels
+
+== Results ==
+PS --> U: Show arrest summary
+PS --> U: Show updated security levels
+
+note right of P
+  Fatigue increases after
+  arrest attempt regardless
+  of success
+end note
+
+note bottom of PS
+  Crimes are removed from
+  applications list when
+  suspect is arrested
+end note
+
+note left of S
+  Security = citizens / crimes
+  per zone, updated after
+  each arrest
+end note
 
 @enduml

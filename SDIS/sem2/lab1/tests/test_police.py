@@ -208,6 +208,33 @@ class TestCrime:
         assert crime.zone == "Zone A"
         assert crime.severity == 3
 
+    def test_crime_repr(self) -> None:
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        assert "Crime" in repr(crime)
+        assert "Theft" in repr(crime)
+
+    def test_crime_str(self) -> None:
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        assert "Theft" in str(crime)
+        assert "Zone A" in str(crime)
+
+    def test_crime_equality(self) -> None:
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime1 = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        crime2 = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        assert crime1 == crime2
+
+    def test_crime_hash(self) -> None:
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        assert isinstance(hash(crime), int)
+
 
 class TestInvestigation:
     """Tests for the Investigation class."""
@@ -225,6 +252,207 @@ class TestInvestigation:
         # Result is probabilistic, so just check it returns correct type or None
         result = investigation.investigate()
         assert result is None or (isinstance(result, tuple) and len(result) == 2)
+
+    def test_investigate_all(self) -> None:
+        law = Law(article=101, severity=5)
+        suspect = Citizen(name="Criminal")
+        crime = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        investigation = Investigation([crime])
+        results = investigation.investigate_all()
+        assert isinstance(results, list)
+
+    def test_investigation_repr(self) -> None:
+        investigation = Investigation([])
+        assert "Investigation" in repr(investigation)
+
+
+class TestPolicemanExtended:
+    """Additional tests for Policeman class."""
+
+    def test_policeman_str(self) -> None:
+        policeman = Policeman(lastname="Smith", zone="Zone A")
+        assert "Smith" in str(policeman)
+        assert "Zone A" in str(policeman)
+
+    def test_policeman_repr(self) -> None:
+        policeman = Policeman(lastname="Smith", zone="Zone A")
+        assert "Policeman" in repr(policeman)
+
+    def test_policeman_has_assignment(self) -> None:
+        policeman = Policeman(lastname="Smith", zone="Zone A")
+        assert policeman.has_assignment is False
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        policeman.assign_crime((crime, 3))
+        assert policeman.has_assignment is True
+
+    def test_policeman_arrest_success(self) -> None:
+        policeman = Policeman(lastname="Smith", zone="Zone A")
+        law = Law(article=101, severity=1)  # Low severity = higher success
+        suspect = Citizen(name="Criminal")
+        crime = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        policeman.assign_crime((crime, 1))
+        # Run multiple times to get a success (probabilistic)
+        success = False
+        for _ in range(10):
+            if policeman.arrest():
+                success = True
+                break
+            policeman.recovery()
+        # At least one success expected with low severity
+        assert success or not policeman.has_assignment
+
+
+class TestPoliceExtended:
+    """Additional tests for Police class."""
+
+    def test_police_repr(self) -> None:
+        police = Police()
+        assert "Police" in repr(police)
+
+    def test_has_zone(self) -> None:
+        police = Police()
+        police.create_zone("Zone A")
+        assert police.has_zone("Zone A") is True
+        assert police.has_zone("Zone B") is False
+
+    def test_add_crime_to_zone(self) -> None:
+        # This test is no longer applicable - crimes are stored in applications only
+        pass
+
+    def test_get_crimes_by_zone_invalid(self) -> None:
+        police = Police()
+        # get_crimes_by_zone now takes all_crimes list
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime = Crime(suspect=suspect, description="Theft", zone="Zone A", law=law)
+        result = police.get_crimes_by_zone("Nonexistent", [crime])
+        assert result == []  # Returns empty for nonexistent zone
+
+    def test_get_crimes_by_zone(self) -> None:
+        police = Police()
+        police.create_zone("Zone A")
+        police.create_zone("Zone B")
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime1 = Crime(suspect=suspect, description="Theft 1", zone="Zone A", law=law)
+        crime2 = Crime(suspect=suspect, description="Theft 2", zone="Zone B", law=law)
+        all_crimes = [crime1, crime2]
+        
+        zone_a_crimes = police.get_crimes_by_zone("Zone A", all_crimes)
+        zone_b_crimes = police.get_crimes_by_zone("Zone B", all_crimes)
+        
+        assert len(zone_a_crimes) == 1
+        assert len(zone_b_crimes) == 1
+        assert zone_a_crimes[0].description == "Theft 1"
+        assert zone_b_crimes[0].description == "Theft 2"
+
+    def test_get_all_crimes(self) -> None:
+        police = Police()
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        crime1 = Crime(suspect=suspect, description="Theft 1", zone="Zone A", law=law)
+        crime2 = Crime(suspect=suspect, description="Theft 2", zone="Zone B", law=law)
+        applications = [crime1, crime2]
+        all_crimes = police.get_all_crimes(applications)
+        assert len(all_crimes) == 2
+
+    def test_update_zone_security(self) -> None:
+        police = Police()
+        police.create_zone("Zone A")
+        police.update_zone_security("Zone A", 10, 0)  # 10 citizens, 0 crimes
+        assert police.zones["Zone A"]["security"] == 10.0
+
+    def test_update_zone_security_with_crimes(self) -> None:
+        police = Police()
+        police.create_zone("Zone A")
+        police.update_zone_security("Zone A", 10, 1)  # 10 citizens, 1 crime
+        assert police.zones["Zone A"]["security"] == 10.0  # 10 / 1 = 10.0
+
+    def test_update_all_zones_security(self) -> None:
+        police = Police()
+        police.create_zone("Zone A")
+        police.create_zone("Zone B")
+        police.update_all_zones_security(20, {"Zone A": 2, "Zone B": 1})
+        assert police.zones["Zone A"]["security"] == 10.0  # 20 / 2
+        assert police.zones["Zone B"]["security"] == 20.0  # 20 / 1
+
+    def test_add_crime_duplicate_prevention(self) -> None:
+        # This test is no longer applicable since crimes are stored in applications only
+        # The Police class no longer manages crimes directly
+        pass
+
+
+class TestSecurityExtended:
+    """Additional tests for Security class."""
+
+    def test_security_repr(self) -> None:
+        security = Security()
+        assert "Security" in repr(security)
+
+    def test_security_str(self) -> None:
+        security = Security(base_level=5.0)
+        assert "Security Level" in str(security)
+
+    def test_security_set_level(self) -> None:
+        security = Security()
+        security.level = 5.0
+        assert security.level == 5.0
+
+    def test_security_negative_level(self) -> None:
+        security = Security()
+        with pytest.raises(ValueError):
+            security.level = -1.0
+
+
+class TestLawExtended:
+    """Additional tests for Law class."""
+
+    def test_law_repr(self) -> None:
+        law = Law(article=101, severity=3)
+        assert "Law" in repr(law)
+
+    def test_law_str(self) -> None:
+        law = Law(article=101, severity=3)
+        assert "Article" in str(law)
+        assert "101" in str(law)
+
+    def test_law_hash(self) -> None:
+        law = Law(article=101, severity=3)
+        assert isinstance(hash(law), int)
+
+    def test_law_desc_setter(self) -> None:
+        law = Law(article=101, severity=3)
+        law.desc = "Updated description"
+        assert law.desc == "Updated description"
+
+
+class TestCitizenExtended:
+    """Additional tests for Citizen class."""
+
+    def test_citizen_repr(self) -> None:
+        citizen = Citizen(name="John Doe")
+        assert "Citizen" in repr(citizen)
+        assert "John Doe" in repr(citizen)
+
+    def test_citizen_str(self) -> None:
+        citizen = Citizen(name="John Doe")
+        assert "John Doe" in str(citizen)
+
+    def test_citizen_submit_application(self) -> None:
+        law = Law(article=101, severity=3)
+        suspect = Citizen(name="Criminal")
+        reporter = Citizen(name="Reporter")
+        crime = reporter.submit_application(
+            suspect=suspect,
+            description="Test crime",
+            zone="Zone A",
+            law=law
+        )
+        assert isinstance(crime, Crime)
+        assert crime.suspect == suspect
+        assert crime.description == "Test crime"
 
 
 class TestSecurity:

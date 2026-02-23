@@ -38,30 +38,51 @@ python main.py
 ```
 
 Example session:
-```
-police> citizen add John Doe
-✓ Citizen 'John Doe' added
+```bash
+# Populate database manually
+python main.py police add-zone Downtown
+python main.py police add-zone Suburbs
+python main.py citizen add "John Smith"
+python main.py citizen add "Mary Johnson"
+python main.py police hire "Miller" Downtown
+python main.py police hire "Moore" Downtown
+python main.py law add 101 3 "Theft"
+python main.py statement add "Stole a bike" Downtown 0 0
+python main.py statement add "Breaking & entering" Downtown 1 0
 
-police> police add-zone Downtown
-✓ Zone 'Downtown' created
+# Investigate ALL crimes at once with arrests
+police> investigate --arrest
+✓ Investigation completed for 2 crime(s):
+  • John Smith is likely guilty
+    Assigned to: Miller
+  • Mary Johnson is likely guilty
+    Assigned to: Moore
 
-police> police hire Smith Downtown
-✓ Officer Smith hired to zone Downtown
+🚔 Attempting arrests...
+  ✓ Miller made an arrest!
+  ✗ Moore failed to arrest suspect
 
-police> law add 101 3 Theft
-✓ Law added: Article 101 (Severity: 3)
+📊 Arrest Summary:
+  Successful: 1
+  Failed: 1
+  Crimes removed: 1
 
-police> statement add "Stole a bike" Downtown 0 0
-✓ Crime report filed successfully
+📊 Updated Security Levels:
+  Downtown: 2.00/10.00
+  Suburbs: 10.00/10.00
 
-police> investigate
-✓ Investigation result: John Doe is likely guilty
+# Check remaining crimes
+police> statement list
+[0] Crime: Breaking & entering (Zone: Downtown, Severity: 3)
 
-police> save
-✓ Data saved successfully
-
-police> exit
-Goodbye!
+# Show zone info with fatigue
+police> police info
+Zone: Downtown
+  Officers: 2
+    - Miller | Fatigue: 🟢 Fresh
+    - Moore | Fatigue: 🟢 Fresh [ASSIGNED]
+  Crimes: 1
+  Security Level: 2.00/10.00
 ```
 
 ### Command-Line Mode
@@ -159,11 +180,13 @@ pytest
 python -m pytest
 ```
 
-Run with verbose output:
+Run with verbose output and coverage:
 
 ```bash
-pytest -v
+pytest -v --cov=police --cov-report=term-missing
 ```
+
+**Coverage: 93%** (69 tests)
 
 ## 📊 UML Diagrams
 
@@ -210,7 +233,7 @@ The diagrams are created in PlantUML format (.puml files). To view them:
 | `police fire <lastname>` | Fire an officer |
 | `police add-zone <zone>` | Create a new zone |
 | `police list` | Show all officers |
-| `police info` | Show zone details |
+| `police info` | Show zone details **with fatigue levels** |
 | `police relocate <idx...> <zone>` | Move officers |
 
 ### Crime Commands
@@ -224,7 +247,7 @@ The diagrams are created in PlantUML format (.puml files). To view them:
 | Command | Description |
 |---------|-------------|
 | `investigate` | Analyze crimes |
-| `investigate --arrest` | Investigate and arrest |
+| `investigate --arrest` | Investigate, arrest, **and show updated security** |
 
 ### Law Commands
 | Command | Description |
@@ -235,10 +258,11 @@ The diagrams are created in PlantUML format (.puml files). To view them:
 ### System Commands
 | Command | Description |
 |---------|-------------|
+| `help`, `?` | Show available commands |
 | `history show` | View action history |
 | `history clear` | Clear history |
 | `save` | Save data |
-| `exit` | Save and quit |
+| `exit`, `quit`, `q` | Save and quit |
 
 ## ⚙️ Data Persistence
 
@@ -256,10 +280,12 @@ Data is automatically saved to the `data/` directory in pickle format:
 - ✅ **PEP8 Compliant** - Follows Python style guidelines
 - ✅ **Type Hints** - Full type annotation throughout
 - ✅ **Exception Handling** - Custom exception hierarchy
-- ✅ **CLI Interface** - Both interactive and command-line modes
+- ✅ **CLI Interface** - Both interactive and command-line modes with help
 - ✅ **Data Persistence** - State saved between sessions
-- ✅ **Unit Tests** - Comprehensive test coverage
-- ✅ **UML Documentation** - Class, state, and sequence diagrams
+- ✅ **Unit Tests** - 69 tests with 93% coverage
+- ✅ **UML Documentation** - Class, state, and sequence diagrams (UML 2.x)
+- ✅ **Security Tracking** - Per-zone security levels with auto-update
+- ✅ **Fatigue System** - Officer fatigue affects arrest success
 - ✅ **GitHub Ready** - Structured for version control
 
 ## 📝 License

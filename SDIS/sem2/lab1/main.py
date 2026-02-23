@@ -8,7 +8,6 @@ and maintaining public order.
 
 import argparse
 import pickle
-import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -87,6 +86,20 @@ class PoliceSystem:
                 pickle.dump(obj, f)
         print("✓ Data saved successfully")
 
+    def _update_security(self) -> None:
+        """Update security levels for all zones."""
+        citizen_count = len(self.citizens)
+        # Count crimes per zone
+        crimes_by_zone: dict[str, int] = {}
+        for zone in self.police.zones:
+            crimes_by_zone[zone] = 0
+        for crime in self.applications:
+            if crime.zone in crimes_by_zone:
+                crimes_by_zone[crime.zone] += 1
+        self.police.update_all_zones_security(citizen_count, crimes_by_zone)
+        # Also update global security
+        self.security.eval(self.citizens, self.applications)
+
     # Statement operations
     def create_statement(self, description: str, zone: str, suspect_idx: int, law_idx: int) -> None:
         """Create a new crime statement."""
@@ -114,7 +127,7 @@ class PoliceSystem:
             law=law
         )
         self.applications.append(application)
-        self.police.add_crime_to_zone(zone, application)
+        self._update_security()
         self.history.append(f"Crime report filed: {application.suspect.name} - {description}")
         print(f"✓ Crime report filed successfully")
 
@@ -122,6 +135,7 @@ class PoliceSystem:
         """Delete a crime statement by index."""
         try:
             removed = self.applications.pop(index)
+            self._update_security()
             self.history.append(f"Application deleted: {removed.description}")
             print(f"✓ Application deleted")
         except IndexError:
@@ -140,6 +154,7 @@ class PoliceSystem:
         """Add a new citizen."""
         citizen = Citizen(name=name)
         self.citizens.append(citizen)
+        self._update_security()
         self.history.append(f"Citizen added: {name}")
         print(f"✓ Citizen '{name}' added")
 
@@ -147,6 +162,7 @@ class PoliceSystem:
         """Delete a citizen by index."""
         try:
             removed = self.citizens.pop(index)
+            self._update_security()
             self.history.append(f"Citizen removed: {removed.name}")
             print(f"✓ Citizen removed")
         except IndexError:
@@ -196,31 +212,36 @@ class PoliceSystem:
             print(f"✗ Error: {e}")
 
     def show_policemen(self) -> None:
-        """Display all policemen."""
+        """Display all policemen with indexes and fatigue."""
         policemen = self.police.get_policemen()
         if not policemen:
             print("No policemen hired")
             return
-        for policeman in policemen:
-            print(policeman)
+        for i, policeman in enumerate(policemen):
+            print(f"[{i}] {policeman}")
 
     def show_info(self) -> None:
-        """Display detailed zone information."""
+        """Display detailed zone information with fatigue levels."""
         if not self.police.zones:
             print("No zones registered")
             return
 
         for zone_id, data in sorted(self.police.zones.items()):
-            print(f"\n{'='*40}")
+            print(f"\n{'='*50}")
             print(f"Zone: {zone_id}")
-            print(f"{'='*40}")
+            print(f"{'='*50}")
             print(f"  Officers: {len(data['policemen'])}")
             for policeman in data["policemen"]:
-                print(f"    - {policeman}")
-            print(f"  Crimes: {len(data['crimes'])}")
-            for crime in data["crimes"]:
-                print(f"    - {crime}")
-            print(f"  Security: {data['security']}")
+                fatigue_status = "🟢 Fresh" if policeman.fatigue < 3 else "🟡 Tired" if policeman.fatigue < 6 else "🔴 Exhausted"
+                assignment = " [ASSIGNED]" if policeman.has_assignment else ""
+                print(f"    - {policeman.lastname} | Fatigue: {fatigue_status}{assignment}")
+            
+            # Show crimes from applications (source of truth) for this zone
+            zone_crimes = [c for c in self.applications if c.zone == zone_id]
+            print(f"\n  Crimes: {len(zone_crimes)}")
+            for crime in zone_crimes:
+                print(f"    - {crime.description} (Severity: {crime.severity})")
+            print(f"\n  Security Level: {data['security']:.2f}/10.00")
 
     def relocate_policemen(self, indexes: list[int], target_zone: str) -> None:
         """Relocate policemen to a new zone."""
@@ -234,57 +255,121 @@ class PoliceSystem:
             self.police.relocate(relocated_policemen=relocated, target_zone=target_zone)
             self.history.append(f"Policemen relocated to zone {target_zone}")
             print(f"✓ Officers relocated to zone {target_zone}")
+            # Show new distribution
+            print(f"\nNew distribution in {target_zone}:")
+            for officer in self.police.get_policemen_by_zone(target_zone):
+                print(f"  - {officer.lastname}")
         except IndexError:
             print("✗ Invalid policeman index")
         except (ZoneNotFoundError, PolicemanNotFoundError) as e:
             print(f"✗ Error: {e}")
 
     # Investigation operations
-    def investigate_crimes(self) -> None:
-        """Investigate all pending crimes."""
+    def investigate_crimes(self, do_arrest: bool = False) -> None:
+        """
+        Investigate ALL pending crimes and optionally attempt arrests.
+        
+        Args:
+            do_arrest: If True, attempt arrests immediately after investigation.
+        """
         if not self.applications:
             print("No crimes to investigate")
             return
 
         investigation = Investigation(self.applications)
-        result = investigation.investigate()
+        results = investigation.investigate_all()
 
-        if result:
-            crime, severity = result
-            print(f"✓ Investigation result: {crime.suspect.name} is likely guilty")
-            print(f"  Crime: {crime.description}, Severity: {severity}")
+        if not results:
+            print("✗ Investigation inconclusive for all crimes")
+            return
 
-            # Assign to available policeman
-            available_officers = [p for p in self.police.get_policemen() if not p.has_assignment]
-            if available_officers:
-                officer = available_officers[0]
-                officer.assign_crime(result)
-                print(f"  Assigned to: {officer.lastname}")
+        print(f"✓ Investigation completed for {len(results)} crime(s):\n")
+        
+        available_officers = [p for p in self.police.get_policemen() if not p.has_assignment]
+        officer_idx = 0
+        assigned_count = 0
+
+        for crime, severity in results:
+            print(f"  • {crime.suspect.name} is likely guilty")
+            print(f"    Crime: {crime.description}, Severity: {severity}")
+
+            # Assign to available officer
+            if officer_idx < len(available_officers):
+                officer = available_officers[officer_idx]
+                officer.assign_crime((crime, severity))
+                print(f"    Assigned to: {officer.lastname} ({officer.zone})\n")
+                officer_idx += 1
+                assigned_count += 1
             else:
-                print("  ⚠ No officers available for arrest")
-        else:
-            print("✗ Investigation inconclusive")
+                print(f"    ⚠ No available officer for assignment\n")
 
-    def arrest_criminals(self) -> None:
-        """Attempt to arrest assigned criminals."""
+        if assigned_count == 0:
+            print("⚠ No officers available for arrest assignments")
+
+        # If do_arrest is True, attempt arrests immediately
+        if do_arrest:
+            self._perform_arrests_and_cleanup()
+
+    def _perform_arrests_and_cleanup(self) -> None:
+        """
+        Attempt arrests for all assigned officers and remove solved crimes.
+        
+        This method:
+        1. Attempts arrest for each officer with an assignment
+        2. Removes crime from applications and zone on successful arrest
+        3. Updates security levels
+        4. Shows summary of results
+        """
         officers = self.police.get_policemen()
         arrests = 0
+        failed = 0
+        arrested_suspects: set[str] = set()
 
+        print("\n🚔 Attempting arrests...\n")
+        
         for officer in officers:
             if officer.has_assignment:
+                # Store suspect name BEFORE arrest (since it gets cleared on success)
+                suspect_name = officer._criminal[0].suspect.name if officer._criminal else None
+                
                 if officer.arrest():
                     arrests += 1
+                    # Track which suspect was arrested
+                    if suspect_name:
+                        arrested_suspects.add(suspect_name)
                     self.history.append(f"Criminal arrested by {officer.lastname}")
-                    print(f"✓ {officer.lastname} made an arrest")
+                    print(f"  ✓ {officer.lastname} made an arrest!")
                 else:
-                    print(f"✗ {officer.lastname} failed to arrest")
+                    failed += 1
+                    print(f"  ✗ {officer.lastname} failed to arrest suspect")
 
-        if arrests == 0:
-            print("No arrests made")
+        # Remove solved crimes from applications
+        removed_count = 0
+        for crime in list(self.applications):
+            if crime.suspect.name in arrested_suspects:
+                self.applications.remove(crime)
+                removed_count += 1
 
         # Recovery for all officers
         for officer in officers:
             officer.recovery()
+
+        # Summary
+        print(f"\n📊 Arrest Summary:")
+        print(f"  Successful: {arrests}")
+        print(f"  Failed: {failed}")
+        print(f"  Crimes removed: {removed_count}")
+
+        # Update and show security after arrests
+        self._update_security()
+        print(f"\n📊 Updated Security Levels:")
+        for zone_id, data in sorted(self.police.zones.items()):
+            print(f"  {zone_id}: {data['security']:.2f}/10.00")
+        print(f"  Overall: {self.security.level:.2f}/10.00")
+
+    def arrest_criminals(self) -> None:
+        """Attempt to arrest assigned criminals (standalone command)."""
+        self._perform_arrests_and_cleanup()
 
     # History operations
     def show_history(self) -> None:
@@ -320,7 +405,16 @@ class PoliceSystem:
 def create_parser() -> argparse.ArgumentParser:
     """Create the argument parser."""
     parser = argparse.ArgumentParser(
-        description="Police Management System",
+        description="""Police Management System - A CLI application for managing police departments,
+crime investigations, and maintaining public order.
+
+Examples:
+  %(prog)s citizen add "John Doe"     Add a new citizen
+  %(prog)s police add-zone Downtown   Create a new zone
+  %(prog)s police hire Smith Downtown Hire an officer
+  %(prog)s investigate --arrest       Investigate and arrest
+  %(prog)s police info                Show zone details with fatigue
+""",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
@@ -367,7 +461,7 @@ def create_parser() -> argparse.ArgumentParser:
     pol_zone.add_argument("zone", help="Zone name")
 
     pol_sub.add_parser("list", help="List all officers")
-    pol_sub.add_parser("info", help="Show zone information")
+    pol_sub.add_parser("info", help="Show zone information with fatigue levels")
 
     pol_reloc = pol_sub.add_parser("relocate", help="Relocate officers")
     pol_reloc.add_argument("indexes", type=int, nargs="+", help="Officer indexes")
@@ -375,7 +469,7 @@ def create_parser() -> argparse.ArgumentParser:
 
     # Investigation commands
     inv_parser = subparsers.add_parser("investigate", help="Investigate crimes")
-    inv_parser.add_argument("--arrest", action="store_true", help="Attempt arrests after investigation")
+    inv_parser.add_argument("--arrest", "-a", action="store_true", help="Attempt arrests after investigation")
 
     # History commands
     hist_parser = subparsers.add_parser("history", help="History operations")
@@ -401,13 +495,55 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def print_help() -> None:
+    """Print interactive mode help."""
+    print("""
+╔═══════════════════════════════════════════════════════════╗
+║           POLICE MANAGEMENT SYSTEM - HELP                 ║
+╠═══════════════════════════════════════════════════════════╣
+║  CITIZEN COMMANDS:                                        ║
+║    citizen add <name>         - Add a citizen             ║
+║    citizen delete <index>     - Remove a citizen          ║
+║    citizen list               - Show all citizens         ║
+║                                                           ║
+║  POLICE COMMANDS:                                         ║
+║    police hire <lastname> <zone>  - Hire an officer      ║
+║    police fire <lastname>         - Fire an officer      ║
+║    police add-zone <zone>         - Create a zone        ║
+║    police list                    - Show all officers    ║
+║    police info                    - Show zone details    ║
+║    police relocate <idx...> <zone>- Move officers        ║
+║                                                           ║
+║  CRIME COMMANDS:                                          ║
+║    statement add <desc> <zone> <suspect_idx> <law_idx>   ║
+║    statement delete <index>       - Remove a report      ║
+║    statement list                 - Show all reports     ║
+║                                                           ║
+║  INVESTIGATION:                                           ║
+║    investigate                    - Analyze crimes        ║
+║    investigate --arrest           - Investigate + arrest ║
+║                                                           ║
+║  LAW COMMANDS:                                            ║
+║    law add <article> <severity> <desc> - Add a law       ║
+║    law list                          - Show all laws     ║
+║                                                           ║
+║  SYSTEM:                                                  ║
+║    history show                   - View history          ║
+║    history clear                  - Clear history         ║
+║    save                           - Save and continue     ║
+║    exit, quit, q                  - Save and exit         ║
+║    help, ?                        - Show this help        ║
+╚═══════════════════════════════════════════════════════════╝
+""")
+
+
 def interactive_mode(system: PoliceSystem) -> None:
     """Run the system in interactive mode."""
     print("\n" + "="*50)
     print("  POLICE MANAGEMENT SYSTEM")
     print("="*50)
-    print("\nCommands: statement, citizen, police, investigate, history, law, save, exit")
-    print("Use --help for command details\n")
+    print("\nType 'help' or '?' for available commands")
+    print("Use --help with commands for details (e.g., 'police --help')\n")
 
     while True:
         try:
@@ -423,12 +559,16 @@ def interactive_mode(system: PoliceSystem) -> None:
                 print("Goodbye!")
                 break
 
+            elif command in ("help", "?"):
+                print_help()
+
             elif command == "save":
                 system.save_data()
 
             elif command == "statement":
                 if len(args) < 2:
                     print("Usage: statement <add|delete|list> [args...]")
+                    print("       statement add <desc> <zone> <suspect_idx> <law_idx>")
                     continue
                 subcmd = args[1]
                 if subcmd == "add":
@@ -496,9 +636,8 @@ def interactive_mode(system: PoliceSystem) -> None:
                     system.relocate_policemen(indexes, target_zone)
 
             elif command == "investigate":
-                system.investigate_crimes()
-                if "--arrest" in args or "-a" in args:
-                    system.arrest_criminals()
+                do_arrest = "--arrest" in args or "-a" in args
+                system.investigate_crimes(do_arrest=do_arrest)
 
             elif command == "history":
                 if len(args) < 2:
@@ -525,7 +664,7 @@ def interactive_mode(system: PoliceSystem) -> None:
 
             else:
                 print(f"Unknown command: {command}")
-                print("Use 'exit' to quit or command --help for details")
+                print("Type 'help' for available commands")
 
         except KeyboardInterrupt:
             print("\nUse 'exit' or 'save' to save and quit")
@@ -536,14 +675,17 @@ def interactive_mode(system: PoliceSystem) -> None:
 def main() -> None:
     """Main entry point."""
     parser = create_parser()
+    
+    # Check if help is requested
+    if len(sys.argv) == 1:
+        # No arguments - run interactive mode
+        system = PoliceSystem()
+        interactive_mode(system)
+        return
+    
     args = parser.parse_args()
 
     system = PoliceSystem()
-
-    # If no command provided, run interactive mode
-    if not args.command:
-        interactive_mode(system)
-        return
 
     # Command-line mode
     try:
@@ -582,9 +724,7 @@ def main() -> None:
             elif args.subcommand == "relocate":
                 system.relocate_policemen(args.indexes, args.target_zone)
         elif args.command == "investigate":
-            system.investigate_crimes()
-            if args.arrest:
-                system.arrest_criminals()
+            system.investigate_crimes(do_arrest=args.arrest)
         elif args.command == "history":
             if args.subcommand == "show":
                 system.show_history()
