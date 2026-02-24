@@ -8,6 +8,7 @@ and maintaining public order.
 
 import argparse
 import pickle
+import shlex
 import sys
 from pathlib import Path
 from typing import Any
@@ -355,14 +356,14 @@ class PoliceSystem:
             officer.recovery()
 
         # Summary
-        print(f"\n📊 Arrest Summary:")
+        print(f"\nArrest Summary:")
         print(f"  Successful: {arrests}")
         print(f"  Failed: {failed}")
         print(f"  Crimes removed: {removed_count}")
 
         # Update and show security after arrests
         self._update_security()
-        print(f"\n📊 Updated Security Levels:")
+        print(f"\nUpdated Security Levels:")
         for zone_id, data in sorted(self.police.zones.items()):
             print(f"  {zone_id}: {data['security']:.2f}/10.00")
         print(f"  Overall: {self.security.level:.2f}/10.00")
@@ -551,7 +552,7 @@ def interactive_mode(system: PoliceSystem) -> None:
             if not user_input:
                 continue
 
-            args = user_input.split()
+            args = shlex.split(user_input)
             command = args[0]
 
             if command in ("exit", "quit", "q"):
