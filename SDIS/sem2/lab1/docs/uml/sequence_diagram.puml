@@ -12,7 +12,7 @@ skinparam sequence {
 skinparam roundcorner 5
 skinparam maxmessages 50
 
-title Crime Investigation Process
+title Crime Investigation Process (investigate --arrest)
 
 actor "User" as U
 participant "CLI" as C
@@ -24,7 +24,21 @@ participant "Policeman" as O
 == Initialization ==
 
 U -> C : investigate --arrest
-C -> S : investigate_crimes(true)
+C -> S : investigate_crimes(do_arrest=True)
+
+== Clear Stale Assignments ==
+
+S -> P : get_policemen()
+activate P
+P --> S : list[Policeman]
+deactivate P
+
+loop For each officer
+    S -> O : clear_assignment()
+    activate O
+    O --> S : _criminal = None
+    deactivate O
+end
 
 == Investigation Phase ==
 
@@ -46,43 +60,63 @@ P --> S : list[Policeman]
 deactivate P
 
 loop For each result
-    S -> O : assign_crime()
-    activate O
-    O --> S : assigned
-    deactivate O
+    S -> S : Filter available\n(not resting, no assignment)
+    
+    alt Officer available
+        S -> O : assign_crime((crime, severity))
+        activate O
+        O --> S : _criminal assigned
+        deactivate O
+    else No available officer
+        S --> S : ⚠ No available officer
+    end
 end
 
 == Arrest Phase ==
 
-loop For each officer
+S -> P : get_policemen()
+activate P
+P --> S : list[Policeman]
+deactivate P
+
+loop For each officer with assignment
     S -> O : arrest()
     activate O
     O -> O : Check success\n(fatigue, severity)
     
     alt Success
-        O --> S : true
-        note right: Crime removed
+        O --> S : True
+        O -> O : _criminal = None
+        note right: Crime will be removed
     else Failure
-        O --> S : false
+        O --> S : False
+        note right: Suspect remains
     end
     
     O -> O : fatigue++
+    O -> O : check_exhaustion()\nif fatigue >= 6: is_resting = True
+    
     deactivate O
 end
 
-== Recovery Phase ==
+== Cleanup Phase ==
 
-loop For each officer
-    S -> O : recovery()
-    activate O
-    O -> O : fatigue = 0
-    deactivate O
+loop For each arrested suspect
+    S -> S : Remove crime from\napplications
 end
 
 == Security Update ==
 
-S -> S : Update zone security
+S -> S : _update_security()\n(citizens per zone / crimes per zone)
 S --> C : Display results
 C --> U : Output
+
+note right
+    Security formula:
+    zone_security = citizens_in_zone / crimes_in_zone
+    
+    If no crimes: 10.0
+    If no citizens: 0.0
+end note
 
 @enduml

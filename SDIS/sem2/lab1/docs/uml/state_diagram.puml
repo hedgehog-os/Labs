@@ -1,11 +1,6 @@
 @startuml state_diagram
 ' Police Management System - Policeman State Diagram
 ' UML 2.5
-' 
-' States are determined by:
-' - is_work: True (on duty) / False (off duty)
-' - has_assignment: True (crime assigned) / False (no assignment)
-' - fatigue: 0-2 (fresh), 3-5 (tired), 6+ (exhausted) - visual only
 
 skinparam defaultFontName "Arial"
 skinparam fontSize 10
@@ -18,71 +13,30 @@ skinparam roundcorner 5
 
 title Policeman State Machine
 
-[*] --> OffDuty : Constructor\nis_work = True
+[*] --> OnDuty
 
-state "Off Duty" as OffDuty {
-    note right
-        is_work = False
-        No active assignments
-    end note
-}
+state "On Duty" as OnDuty
+state "Off Duty" as OffDuty
+state "Assigned" as Assigned
+state "Arresting" as Arresting
+state "Resting" as Resting
 
-state "On Duty" as OnDuty {
-    note right
-        is_work = True
-        has_assignment = False
-        Available for assignment
-    end note
-}
-
-state "Assigned" as Assigned {
-    note right
-        is_work = True
-        has_assignment = True
-        _criminal != None
-        Ready to arrest
-    end note
-}
-
-state "Arrest Attempt" as Arresting {
-    note right
-        Executing arrest()
-        Success based on:
-        - fatigue level
-        - crime severity
-    end note
-}
-
-' Transitions
-OffDuty --> OnDuty : hire()\nis_work = True
-
-OnDuty --> OffDuty : fire()\nis_work = False
-
-OnDuty --> Assigned : assign_crime()\n_criminal = (crime, severity)
-
+OnDuty --> OffDuty : fire()
+OnDuty --> Assigned : assign_crime()
 Assigned --> Arresting : arrest()
-
-Arresting --> OnDuty : success\n_criminal = None\nfatigue++
-
-Arresting --> Assigned : failure\nfatigue++
-
-Assigned --> OnDuty : recovery()\n_criminal = None\nfatigue = 0
+Arresting --> OnDuty : success (fatigue++)
+Arresting --> Assigned : failure (fatigue++)
+Assigned --> OnDuty : clear_assignment()
+OnDuty --> Resting : fatigue >= 6
+Resting --> OnDuty : recovery()
 
 note bottom of OnDuty
-    Fatigue levels (visual only):
-    - 0-2: Fresh (🟢)
-    - 3-5: Tired (🟡)
-    - 6+: Exhausted (🔴)
+  Fatigue: 0-2 🟢 Fresh
+  3-5 🟡 Tired
+  6+ 🔴 Resting
 end note
 
-note right of Arresting
-    Success chance:
-    1 - (fatigue + severity) / 20
-    Clamped to [0.1, 0.9]
-end note
-
-' Termination
-OnDuty --> [*] : fire()
-OffDuty --> [*] : remove from system
+OnDuty --> [*]
+OffDuty --> [*]
 
 @enduml

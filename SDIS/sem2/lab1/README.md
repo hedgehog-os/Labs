@@ -181,21 +181,27 @@ pytest -v --cov=police --cov=main --cov-report=term-missing
 ### Class Diagram
 Shows the structure and relationships between all system entities.
 
-File: `docs/uml/class_diagram.puml`
+![Class Diagram](docs/uml/class_diagram.png)
+
+**Source:** `docs/uml/class_diagram.puml`
 
 ### State Diagram
 Shows the policeman state machine during arrest operations.
 
-File: `docs/uml/state_diagram.puml`
+![State Diagram](docs/uml/state_diagram.png)
+
+**Source:** `docs/uml/state_diagram.puml`
 
 ### Sequence Diagram
 Shows the crime investigation process and component interactions.
 
-File: `docs/uml/sequence_diagram.puml`
+![Sequence Diagram](docs/uml/sequence_diagram.png)
+
+**Source:** `docs/uml/sequence_diagram.puml`
 
 ### Viewing UML Diagrams
 
-Diagrams are created in PlantUML format (.puml). To view them:
+Diagrams are created in PlantUML format (.puml). To view or regenerate them:
 
 1. **VS Code**: Install "PlantUML" extension by jebbs
 2. **IntelliJ IDEA**: Install "PlantUML Integration" plugin

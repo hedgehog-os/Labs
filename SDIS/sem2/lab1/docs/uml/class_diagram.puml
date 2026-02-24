@@ -19,15 +19,24 @@ class ZoneNotFoundError {
 class PolicemanNotFoundError {
     + __init__(message: str)
 }
+class CitizenError {
+    + __init__(message: str)
+}
+class LawError {
+    + __init__(message: str)
+}
+class InvestigationError {
+    + __init__(message: str)
+}
 
 PoliceError <|-- ZoneNotFoundError
 PoliceError <|-- PolicemanNotFoundError
 
 ' Domain classes
 class Law {
-    - article: int
-    - severity: int
-    - desc: str
+    - _article: int
+    - _severity: int
+    - _desc: str
     + __init__(article: int, severity: int, desc: str)
     + article: int <<property>>
     + severity: int <<property>>
@@ -35,53 +44,65 @@ class Law {
 }
 
 class Citizen {
-    - name: str
-    + __init__(name: str)
+    - _name: str
+    - _zone: str | None
+    + __init__(name: str, zone: str | None = None)
     + name: str <<property>>
+    + zone: str | None <<property>>
     + submit_application(...) : Crime
 }
 
 class Crime {
-    - description: str
-    - suspect: Citizen
-    - zone: str
-    - law: Law
+    - _description: str
+    - _suspect: Citizen
+    - _zone: str
+    - _law: Law
     + __init__(suspect, description, zone, law)
     + severity: int <<property>>
 }
 
 class Policeman {
-    - lastname: str
-    - zone: str
-    - is_work: bool
-    - fatigue: int
-    - criminal: tuple | None
+    - _lastname: str
+    - _zone: str | int | float
+    - _is_work: bool
+    - _fatigue: int
+    - _criminal: tuple | None
+    - _is_resting: bool
     + __init__(lastname: str, zone: str, is_work: bool)
     + arrest() : bool
     + assign_crime(criminal: tuple) : None
     + recovery() : None
+    + clear_assignment() : None
+    + check_exhaustion() : bool
     + has_assignment: bool <<property>>
+    + is_resting: bool <<property>>
+    + fatigue: int <<property>>
 }
 
 class Police {
-    - zones: dict[str, dict]
+    - _zones: dict[str, dict]
     + __init__(zones: dict)
     + hire(policeman: Policeman, zone: str) : None
     + fire(policeman: Policeman) : None
     + relocate(policemen: list, zone: str) : None
     + get_policemen() : list[Policeman]
-    + update_zone_security(zone: str, citizens: int, crimes: int) : None
+    + add_zone(zone: str) : None
+    + has_zone(zone: str) : bool
+    + update_zone_security(zone: str, citizen_count: int, crime_count: int) : None
+    + update_all_zones_security(citizen_count: int, crimes_by_zone: dict) : None
 }
 
 class Investigation {
-    - crimes: list[Crime]
+    - _crimes: list[Crime]
     + __init__(crimes: list[Crime])
+    + investigate() : tuple[Crime, int] | None
     + investigate_all() : list[tuple[Crime, int]]
 }
 
 class Security {
-    - level: float
+    - _level: float
     + __init__(level: float)
+    + level: float <<property>>
     + eval(citizens: list[Citizen], crimes: list[Crime]) : float
     + decrease(amount: float) : None
     + increase(amount: float) : None
@@ -105,6 +126,13 @@ note right of Police
             "security": float
         }
     }
+end note
+
+note right of Policeman
+    Fatigue states:
+    - 0-2: Fresh (🟢)
+    - 3-5: Tired (🟡)
+    - 6+: Resting (⏸️)
 end note
 
 @enduml
