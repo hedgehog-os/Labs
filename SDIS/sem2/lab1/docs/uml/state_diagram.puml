@@ -3,13 +3,15 @@
 ' UML 2.5
 
 skinparam defaultFontName "Arial"
-skinparam fontSize 10
+skinparam fontSize 11
 skinparam state {
     BackgroundColor White
     BorderColor Black
     ArrowColor Black
+    ArrowThickness 2
 }
 skinparam roundcorner 5
+skinparam shadowing false
 
 title Policeman State Machine
 
@@ -17,26 +19,70 @@ title Policeman State Machine
 
 state "On Duty" as OnDuty
 state "Off Duty" as OffDuty
-state "Assigned" as Assigned
-state "Arresting" as Arresting
-state "Resting" as Resting
+state "Has Assignment" as Assigned
+state "Attempting Arrest" as Arresting
+state "Exhausted/Resting" as Resting
 
-OnDuty --> OffDuty : fire()
-OnDuty --> Assigned : assign_crime()
-Assigned --> Arresting : arrest()
-Arresting --> OnDuty : success (fatigue++)
-Arresting --> Assigned : failure (fatigue++)
+' Transitions
+OnDuty --> OffDuty : fire()\nis_work = False
+OnDuty --> Assigned : assign_crime(crime)
 Assigned --> OnDuty : clear_assignment()
-OnDuty --> Resting : fatigue >= 6
-Resting --> OnDuty : recovery()
+Assigned --> Arresting : arrest()
+Arresting --> OnDuty : Success\n_criminal = None\nfatigue++
+Arresting --> Assigned : Failure\nfatigue++
+OnDuty --> Resting : fatigue >= 6\ncheck_exhaustion()
+Resting --> OnDuty : recovery()\nfatigue = 0
 
-note bottom of OnDuty
-  Fatigue: 0-2 🟢 Fresh
-  3-5 🟡 Tired
-  6+ 🔴 Resting
+' Notes attached to states
+note right of OnDuty
+  <b>On Duty</b>
+  ----
+  is_work = True
+  has_assignment = False
+  Available for assignments
 end note
 
-OnDuty --> [*]
+note right of Assigned
+  <b>Has Assignment</b>
+  ----
+  _criminal = (crime, severity)
+  Ready to arrest
+end note
+
+note right of Arresting
+  <b>Attempting Arrest</b>
+  ----
+  Success chance:
+  1 - (fatigue + severity) / 20
+  Clamped to [0.1, 0.9]
+end note
+
+note right of Resting
+  <b>Exhausted/Resting</b>
+  ----
+  fatigue >= 6
+  is_resting = True
+  Cannot receive assignments
+end note
+
+note right of OffDuty
+  <b>Off Duty</b>
+  ----
+  is_work = False
+  Fired or inactive
+end note
+
+' Fatigue legend
+note bottom of OnDuty
+  <b>Fatigue Levels</b>
+  ----
+  🟢 Fresh: 0-2
+  🟡 Tired: 3-5
+  🔴 Exhausted: 6+
+end note
+
+' Termination
 OffDuty --> [*]
+OnDuty --> [*] : fire()
 
 @enduml
