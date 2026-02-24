@@ -43,9 +43,9 @@ Example session:
 police> police add-zone Downtown
 police> police add-zone Suburbs
 
-# Add citizens
-police> citizen add "John Smith"
-police> citizen add "Mary Johnson"
+# Add citizens (with optional zone assignment)
+police> citizen add "John Smith" --zone Downtown
+police> citizen add "Mary Johnson" --zone Suburbs
 
 # Hire officers
 police> police hire "Miller" Downtown
@@ -64,8 +64,11 @@ police> investigate --arrest
 # Check remaining crimes
 police> statement list
 
-# Show zone info with fatigue levels
+# Show zone info with fatigue and rest status
 police> police info
+
+# Recover exhausted officers
+police> police recover
 ```
 
 ### Command-Line Mode
@@ -73,8 +76,8 @@ police> police info
 Execute specific commands directly:
 
 ```bash
-# Add a citizen
-python main.py citizen add "John Doe"
+# Add a citizen with zone
+python main.py citizen add "John Doe" --zone Downtown
 
 # Add a zone
 python main.py police add-zone "Downtown"
@@ -96,6 +99,9 @@ python main.py investigate
 
 # Investigate and attempt arrests
 python main.py investigate --arrest
+
+# Recover resting officers
+python main.py police recover
 
 # Show history
 python main.py history show
@@ -138,8 +144,8 @@ lab1/
 | Entity | Description |
 |--------|-------------|
 | **Police** | Manages zones and officers |
-| **Policeman** | Law enforcement officer |
-| **Citizen** | Civilian in the system |
+| **Policeman** | Law enforcement officer (with fatigue and rest mechanics) |
+| **Citizen** | Civilian in the system (can be assigned to a zone) |
 | **Crime** | Criminal offense record |
 | **Law** | Legal statute with severity |
 | **Investigation** | Crime analysis process |
@@ -149,9 +155,10 @@ lab1/
 
 1. **Crime Investigation** - Analyze crimes and identify suspects
 2. **Public Order Maintenance** - Maintain security through officer deployment
-3. **Citizen Interaction** - Accept crime reports from citizens
-4. **Crime Prevention** - Monitor and respond to security levels
-5. **Criminal Arrest** - Apprehend identified criminals
+3. **Citizen Interaction** - Accept crime reports from citizens (with zone assignment)
+4. **Crime Prevention** - Monitor and respond to security levels per zone
+5. **Criminal Arrest** - Apprehend identified criminals (affected by officer fatigue)
+6. **Officer Recovery** - Restore exhausted officers to duty
 
 ## Testing
 
@@ -164,10 +171,10 @@ pytest
 Run with verbose output and coverage report:
 
 ```bash
-pytest -v --cov=police --cov-report=term-missing
+pytest -v --cov=police --cov=main --cov-report=term-missing
 ```
 
-**Code Coverage: 93%** (69 tests)
+**Code Coverage: 91%** (69 tests)
 
 ## UML Diagrams
 
@@ -203,7 +210,7 @@ Diagrams are created in PlantUML format (.puml). To view them:
 ### Citizen Commands
 | Command | Description |
 |---------|-------------|
-| `citizen add <name>` | Add a new citizen |
+| `citizen add <name> [--zone <zone>]` | Add a new citizen (optionally assign to zone) |
 | `citizen delete <index>` | Remove a citizen |
 | `citizen list` | Show all citizens |
 
@@ -214,8 +221,9 @@ Diagrams are created in PlantUML format (.puml). To view them:
 | `police fire <lastname>` | Fire an officer |
 | `police add-zone <zone>` | Create a new zone |
 | `police list` | Show all officers |
-| `police info` | Show zone details with fatigue levels |
-| `police relocate <idx...> <zone>` | Move officers |
+| `police info` | Show zone details with fatigue and rest status |
+| `police recover` | Recover all exhausted officers |
+| `police relocate <idx...> <zone>` | Move officers to a new zone |
 
 ### Crime Commands
 | Command | Description |
@@ -258,15 +266,20 @@ Data is automatically saved to the `data/` directory in pickle format:
 
 ## Features
 
-- PEP8 Compliant - Follows Python style guidelines
-- Type Hints - Full type annotation throughout
-- Exception Handling - Custom exception hierarchy
-- CLI Interface - Both interactive and command-line modes
-- Data Persistence - State saved between sessions
-- Unit Tests - 69 tests with 93% coverage
-- UML Documentation - Class, state, and sequence diagrams (UML 2.x)
-- Security Tracking - Per-zone security levels with auto-update
-- Fatigue System - Officer fatigue affects arrest success
+- **PEP8 Compliant** - Follows Python style guidelines
+- **Type Hints** - Full type annotation throughout
+- **Exception Handling** - Custom exception hierarchy
+- **CLI Interface** - Both interactive and command-line modes
+- **Data Persistence** - State saved between sessions (pickle files)
+- **Unit Tests** - 69 tests with 91% coverage
+- **UML Documentation** - Class, state, and sequence diagrams (UML 2.x)
+- **Per-Zone Security Tracking** - Security levels calculated per zone (citizens/crimes ratio)
+- **Fatigue System** - Officer fatigue accumulates after each arrest attempt
+  - 🟢 Fresh: fatigue 0-2
+  - 🟡 Tired: fatigue 3-5
+  - 🔴 Exhausted/⏸️ Resting: fatigue ≥ 6 (officer goes on rest)
+- **Recovery Command** - `police recover` to restore exhausted officers
+- **Zone Assignment** - Citizens can be assigned to specific zones
 
 ## License
 

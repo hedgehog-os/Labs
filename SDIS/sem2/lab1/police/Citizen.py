@@ -17,8 +17,9 @@ class CitizenError(Exception):
 class Citizen:
     """Represents a citizen who can report crimes and interact with police."""
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, zone: str | None = None) -> None:
         self._name: str = name
+        self._zone: str | None = zone
         # Validate name on initialization
         if not isinstance(name, str):
             raise TypeError("Name must be a string")
@@ -42,6 +43,16 @@ class Citizen:
         if len(value.strip()) < 2:
             raise ValueError("Name must contain at least 2 characters")
         self._name = value.strip()
+
+    @property
+    def zone(self) -> str | None:
+        """Return the citizen's zone."""
+        return self._zone
+
+    @zone.setter
+    def zone(self, value: str) -> None:
+        """Set the citizen's zone."""
+        self._zone = value
 
     def submit_application(
         self,
@@ -71,7 +82,9 @@ class Citizen:
         )
 
     def __repr__(self) -> str:
-        return f"Citizen(name={self._name!r})"
+        zone_info = f", zone={self._zone!r}" if self._zone else ""
+        return f"Citizen(name={self._name!r}{zone_info})"
 
     def __str__(self) -> str:
-        return f"Citizen: {self._name}"
+        zone_info = f" ({self._zone})" if self._zone else ""
+        return f"Citizen: {self._name}{zone_info}"

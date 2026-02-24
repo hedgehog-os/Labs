@@ -89,7 +89,14 @@ class PoliceSystem:
 
     def _update_security(self) -> None:
         """Update security levels for all zones."""
-        citizen_count = len(self.citizens)
+        # Count citizens by zone
+        citizens_by_zone: dict[str, int] = {}
+        for zone in self.police.zones:
+            citizens_by_zone[zone] = 0
+        for citizen in self.citizens:
+            if citizen.zone and citizen.zone in citizens_by_zone:
+                citizens_by_zone[citizen.zone] += 1
+        
         # Count crimes per zone
         crimes_by_zone: dict[str, int] = {}
         for zone in self.police.zones:
@@ -97,7 +104,15 @@ class PoliceSystem:
         for crime in self.applications:
             if crime.zone in crimes_by_zone:
                 crimes_by_zone[crime.zone] += 1
-        self.police.update_all_zones_security(citizen_count, crimes_by_zone)
+        
+        # Update security for each zone based on its own citizens and crimes
+        for zone in self.police.zones:
+            self.police.update_zone_security(
+                zone, 
+                citizens_by_zone[zone], 
+                crimes_by_zone[zone]
+            )
+        
         # Also update global security
         self.security.eval(self.citizens, self.applications)
 
@@ -151,9 +166,9 @@ class PoliceSystem:
             print(f"[{i}] {app}")
 
     # Citizen operations
-    def add_citizen(self, name: str) -> None:
+    def add_citizen(self, name: str, zone: str | None = None) -> None:
         """Add a new citizen."""
-        citizen = Citizen(name=name)
+        citizen = Citizen(name=name, zone=zone)
         self.citizens.append(citizen)
         self._update_security()
         self.history.append(f"Citizen added: {name}")
@@ -221,6 +236,18 @@ class PoliceSystem:
         for i, policeman in enumerate(policemen):
             print(f"[{i}] {policeman}")
 
+    def recover_policemen(self) -> None:
+        """Recover all resting officers."""
+        recovered = 0
+        for officer in self.police.get_policemen():
+            if officer.is_resting:
+                officer.recovery()
+                recovered += 1
+        if recovered > 0:
+            print(f"✓ {recovered} officer(s) recovered from rest")
+        else:
+            print("No officers need recovery")
+
     def show_info(self) -> None:
         """Display detailed zone information with fatigue levels."""
         if not self.police.zones:
@@ -233,9 +260,17 @@ class PoliceSystem:
             print(f"{'='*50}")
             print(f"  Officers: {len(data['policemen'])}")
             for policeman in data["policemen"]:
-                fatigue_status = "🟢 Fresh" if policeman.fatigue < 3 else "🟡 Tired" if policeman.fatigue < 6 else "🔴 Exhausted"
+                if policeman.is_resting:
+                    fatigue_status = "⏸️ Resting"
+                elif policeman.fatigue < 3:
+                    fatigue_status = "🟢 Fresh"
+                elif policeman.fatigue < 6:
+                    fatigue_status = "🟡 Tired"
+                else:
+                    fatigue_status = "🔴 Exhausted"
                 assignment = " [ASSIGNED]" if policeman.has_assignment else ""
-                print(f"    - {policeman.lastname} | Fatigue: {fatigue_status}{assignment}")
+                rest_mark = " [RESTING]" if policeman.is_resting else ""
+                print(f"    - {policeman.lastname} | Fatigue: {fatigue_status}{assignment}{rest_mark}")
             
             # Show crimes from applications (source of truth) for this zone
             zone_crimes = [c for c in self.applications if c.zone == zone_id]
@@ -269,13 +304,17 @@ class PoliceSystem:
     def investigate_crimes(self, do_arrest: bool = False) -> None:
         """
         Investigate ALL pending crimes and optionally attempt arrests.
-        
+
         Args:
             do_arrest: If True, attempt arrests immediately after investigation.
         """
         if not self.applications:
             print("No crimes to investigate")
             return
+
+        # Clear any stale assignments from previous investigations
+        for officer in self.police.get_policemen():
+            officer.clear_assignment()
 
         investigation = Investigation(self.applications)
         results = investigation.investigate_all()
@@ -285,8 +324,12 @@ class PoliceSystem:
             return
 
         print(f"✓ Investigation completed for {len(results)} crime(s):\n")
-        
-        available_officers = [p for p in self.police.get_policemen() if not p.has_assignment]
+
+        # Only consider officers who are not resting and have no assignment
+        available_officers = [
+            p for p in self.police.get_policemen() 
+            if not p.has_assignment and not p.is_resting
+        ]
         officer_idx = 0
         assigned_count = 0
 
@@ -350,10 +393,6 @@ class PoliceSystem:
             if crime.suspect.name in arrested_suspects:
                 self.applications.remove(crime)
                 removed_count += 1
-
-        # Recovery for all officers
-        for officer in officers:
-            officer.recovery()
 
         # Summary
         print(f"\nArrest Summary:")
@@ -441,6 +480,7 @@ Examples:
 
     cit_add = cit_sub.add_parser("add", help="Add a citizen")
     cit_add.add_argument("name", help="Citizen name")
+    cit_add.add_argument("--zone", "-z", help="Citizen's zone")
 
     cit_del = cit_sub.add_parser("delete", help="Delete a citizen")
     cit_del.add_argument("index", type=int, help="Citizen index")
@@ -463,6 +503,7 @@ Examples:
 
     pol_sub.add_parser("list", help="List all officers")
     pol_sub.add_parser("info", help="Show zone information with fatigue levels")
+    pol_sub.add_parser("recover", help="Recover all resting officers")
 
     pol_reloc = pol_sub.add_parser("relocate", help="Relocate officers")
     pol_reloc.add_argument("indexes", type=int, nargs="+", help="Officer indexes")
@@ -513,6 +554,7 @@ def print_help() -> None:
 ║    police add-zone <zone>         - Create a zone         ║
 ║    police list                    - Show all officers     ║
 ║    police info                    - Show zone details     ║
+║    police recover                 - Recover resting officers ║
 ║    police relocate <idx...> <zone>- Move officers         ║
 ║                                                           ║
 ║  CRIME COMMANDS:                                          ║
@@ -592,9 +634,18 @@ def interactive_mode(system: PoliceSystem) -> None:
                 subcmd = args[1]
                 if subcmd == "add":
                     if len(args) < 3:
-                        print("Usage: citizen add <name>")
+                        print("Usage: citizen add <name> [--zone <zone>]")
                         continue
-                    system.add_citizen(args[2])
+                    # Parse optional --zone argument
+                    zone = None
+                    if "--zone" in args or "-z" in args:
+                        try:
+                            z_idx = args.index("--zone") if "--zone" in args else args.index("-z")
+                            if z_idx + 1 < len(args):
+                                zone = args[z_idx + 1]
+                        except (ValueError, IndexError):
+                            pass
+                    system.add_citizen(args[2], zone=zone)
                 elif subcmd == "delete":
                     if len(args) < 3:
                         print("Usage: citizen delete <index>")
@@ -627,6 +678,8 @@ def interactive_mode(system: PoliceSystem) -> None:
                     system.show_policemen()
                 elif subcmd == "info":
                     system.show_info()
+                elif subcmd == "recover":
+                    system.recover_policemen()
                 elif subcmd == "relocate":
                     if len(args) < 4:
                         print("Usage: police relocate <idx1> [idx2...] <target_zone>")
@@ -706,7 +759,7 @@ def main() -> None:
                 system.show_statements()
         elif args.command == "citizen":
             if args.subcommand == "add":
-                system.add_citizen(args.name)
+                system.add_citizen(args.name, zone=args.zone)
             elif args.subcommand == "delete":
                 system.delete_citizen(args.index)
             elif args.subcommand == "list":
@@ -722,6 +775,8 @@ def main() -> None:
                 system.show_policemen()
             elif args.subcommand == "info":
                 system.show_info()
+            elif args.subcommand == "recover":
+                system.recover_policemen()
             elif args.subcommand == "relocate":
                 system.relocate_policemen(args.indexes, args.target_zone)
         elif args.command == "investigate":
