@@ -374,9 +374,14 @@ class TestPoliceExtended:
         police = Police()
         police.create_zone("Zone A")
         police.create_zone("Zone B")
-        police.update_all_zones_security(20, {"Zone A": 2, "Zone B": 1})
-        assert police.zones["Zone A"]["security"] == 10.0  # 20 / 2
-        assert police.zones["Zone B"]["security"] == 20.0  # 20 / 1
+        # Zone A: 10 citizens, 2 crimes = 5.0 security
+        # Zone B: 5 citizens, 1 crime = 5.0 security
+        police.update_all_zones_security(
+            {"Zone A": 10, "Zone B": 5},
+            {"Zone A": 2, "Zone B": 1}
+        )
+        assert police.zones["Zone A"]["security"] == 5.0
+        assert police.zones["Zone B"]["security"] == 5.0
 
     def test_add_crime_duplicate_prevention(self) -> None:
         # This test is no longer applicable since crimes are stored in applications only

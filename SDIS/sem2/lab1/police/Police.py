@@ -120,11 +120,20 @@ class Police:
         elif citizen_count == 0:
             self._zones[zone]["security"] = 0.0
         else:
-            self._zones[zone]["security"] = round(citizen_count / crime_count, 2)
+            # Security = citizens in this zone / crimes in this zone
+            # Capped at 10.0 for display consistency
+            security = citizen_count / crime_count
+            self._zones[zone]["security"] = min(10.0, round(security, 2))
 
-    def update_all_zones_security(self, citizen_count: int, crimes_by_zone: dict[str, int]) -> None:
-        """Update security levels for all zones."""
+    def update_all_zones_security(self, citizens_by_zone: dict[str, int], crimes_by_zone: dict[str, int]) -> None:
+        """Update security levels for all zones.
+        
+        Args:
+            citizens_by_zone: Dictionary mapping zone names to citizen counts.
+            crimes_by_zone: Dictionary mapping zone names to crime counts.
+        """
         for zone in self._zones:
+            citizen_count = citizens_by_zone.get(zone, 0)
             crime_count = crimes_by_zone.get(zone, 0)
             self.update_zone_security(zone, citizen_count, crime_count)
 

@@ -96,7 +96,7 @@ class PoliceSystem:
         for citizen in self.citizens:
             if citizen.zone and citizen.zone in citizens_by_zone:
                 citizens_by_zone[citizen.zone] += 1
-        
+
         # Count crimes per zone
         crimes_by_zone: dict[str, int] = {}
         for zone in self.police.zones:
@@ -104,15 +104,10 @@ class PoliceSystem:
         for crime in self.applications:
             if crime.zone in crimes_by_zone:
                 crimes_by_zone[crime.zone] += 1
-        
+
         # Update security for each zone based on its own citizens and crimes
-        for zone in self.police.zones:
-            self.police.update_zone_security(
-                zone, 
-                citizens_by_zone[zone], 
-                crimes_by_zone[zone]
-            )
-        
+        self.police.update_all_zones_security(citizens_by_zone, crimes_by_zone)
+
         # Also update global security
         self.security.eval(self.citizens, self.applications)
 
