@@ -1,66 +1,88 @@
-@startuml Police Management System - Sequence Diagram
-skinparam defaultFontName "Segoe UI"
-skinparam shadowing false
+@startuml sequence_diagram
+' Police Management System - Crime Investigation Sequence Diagram
+' UML 2.5
 
-title Crime Investigation and Arrest Process
+skinparam defaultFontName "Arial"
+skinparam fontSize 10
+skinparam sequence {
+    LifeLineBackgroundColor White
+    LifeLineBorderColor Black
+    ArrowColor Black
+}
+skinparam roundcorner 5
+skinparam maxmessages 50
 
-participant "User" as U
-participant "PoliceSystem" as PS
+title Crime Investigation Process
+
+actor "User" as U
+participant "CLI" as C
+participant "PoliceSystem" as S
 participant "Investigation" as I
-participant "Policeman" as P
-participant "Security" as S
+participant "Police" as P
+participant "Policeman" as O
+
+== Initialization ==
+
+U -> C : investigate --arrest
+C -> S : investigate_crimes(true)
 
 == Investigation Phase ==
-U -> PS: investigate --arrest
-PS -> I: investigate_all()
-I --> PS: list of (crime, severity)
+
+S -> I : investigate_all()
+activate I
+
+loop For each crime
+    I -> I : Check guilt\n(severity / 5.0)
+    I --> S : (crime, severity)
+end
+
+deactivate I
 
 == Assignment Phase ==
-loop For each guilty finding
-    PS -> PS: Find available officer
-    PS -> P: assign_crime((crime, severity))
-    P -> P: Store criminal assignment
+
+S -> P : get_policemen()
+activate P
+P --> S : list[Policeman]
+deactivate P
+
+loop For each result
+    S -> O : assign_crime()
+    activate O
+    O --> S : assigned
+    deactivate O
 end
 
 == Arrest Phase ==
-PS -> PS: _perform_arrests_and_cleanup()
-loop For each assigned officer
-    PS -> P: arrest()
-    alt Arrest Successful
-        P --> PS: True
-        P -> P: Clear criminal assignment
-        P -> P: Increase fatigue
-    else Arrest Failed
-        P --> PS: False
-        P -> P: Increase fatigue
+
+loop For each officer
+    S -> O : arrest()
+    activate O
+    O -> O : Check success\n(fatigue, severity)
+    
+    alt Success
+        O --> S : true
+        note right: Crime removed
+    else Failure
+        O --> S : false
     end
+    
+    O -> O : fatigue++
+    deactivate O
 end
 
-== Cleanup Phase ==
-PS -> PS: Remove solved crimes from applications
-PS -> S: update_all_zones_security()
-S --> PS: Updated security levels
+== Recovery Phase ==
 
-== Results ==
-PS --> U: Show arrest summary
-PS --> U: Show updated security levels
+loop For each officer
+    S -> O : recovery()
+    activate O
+    O -> O : fatigue = 0
+    deactivate O
+end
 
-note right of P
-  Fatigue increases after
-  arrest attempt regardless
-  of success
-end note
+== Security Update ==
 
-note bottom of PS
-  Crimes are removed from
-  applications list when
-  suspect is arrested
-end note
-
-note left of S
-  Security = citizens / crimes
-  per zone, updated after
-  each arrest
-end note
+S -> S : Update zone security
+S --> C : Display results
+C --> U : Output
 
 @enduml

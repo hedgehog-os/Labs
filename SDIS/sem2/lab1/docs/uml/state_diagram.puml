@@ -1,68 +1,88 @@
-@startuml Police Management System - State Diagram
-skinparam stateFontStyle bold
-skinparam defaultFontName "Segoe UI"
-skinparam shadowing false
+@startuml state_diagram
+' Police Management System - Policeman State Diagram
+' UML 2.5
+' 
+' States are determined by:
+' - is_work: True (on duty) / False (off duty)
+' - has_assignment: True (crime assigned) / False (no assignment)
+' - fatigue: 0-2 (fresh), 3-5 (tired), 6+ (exhausted) - visual only
 
-title Policeman State Diagram
+skinparam defaultFontName "Arial"
+skinparam fontSize 10
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+skinparam roundcorner 5
 
-[*] --> OffDuty : Initial state
+title Policeman State Machine
 
-state OffDuty {
-  [*] --> Idle
-  Idle --> Assigned : receive_crime_assignment()
+[*] --> OffDuty : Constructor\nis_work = True
+
+state "Off Duty" as OffDuty {
+    note right
+        is_work = False
+        No active assignments
+    end note
 }
 
-state OnDuty {
-  [*] --> Idle
-  Idle --> Patrolling : start_patrol()
-  Patrolling --> Idle : finish_patrol()
-  Idle --> Assigned : receive_crime_assignment()
+state "On Duty" as OnDuty {
+    note right
+        is_work = True
+        has_assignment = False
+        Available for assignment
+    end note
 }
 
-state Assigned {
-  [*] --> Investigating
-  Investigating --> AttemptingArrest : suspect_identified
-  AttemptingArrest --> Success : arrest() succeeds
-  AttemptingArrest --> Failed : arrest() fails
-  Success --> [*]
-  Failed --> [*]
+state "Assigned" as Assigned {
+    note right
+        is_work = True
+        has_assignment = True
+        _criminal != None
+        Ready to arrest
+    end note
 }
 
-OffDuty --> OnDuty : hire() / set is_work=true
-OnDuty --> OffDuty : fire() / set is_work=false
-
-OnDuty --> Assigned : investigate_crimes()
-Assigned --> OnDuty : complete_arrest
-
-state AttemptingArrest {
-  state if_arrest_successful <<choice>>
-  
-  [*] --> if_arrest_successful
-  if_arrest_successful --> Success : [success]
-  if_arrest_successful --> Failed : [failure]
+state "Arrest Attempt" as Arresting {
+    note right
+        Executing arrest()
+        Success based on:
+        - fatigue level
+        - crime severity
+    end note
 }
 
-note right of OffDuty
-  Policeman is not
-  currently working
+' Transitions
+OffDuty --> OnDuty : hire()\nis_work = True
+
+OnDuty --> OffDuty : fire()\nis_work = False
+
+OnDuty --> Assigned : assign_crime()\n_criminal = (crime, severity)
+
+Assigned --> Arresting : arrest()
+
+Arresting --> OnDuty : success\n_criminal = None\nfatigue++
+
+Arresting --> Assigned : failure\nfatigue++
+
+Assigned --> OnDuty : recovery()\n_criminal = None\nfatigue = 0
+
+note bottom of OnDuty
+    Fatigue levels (visual only):
+    - 0-2: Fresh (🟢)
+    - 3-5: Tired (🟡)
+    - 6+: Exhausted (🔴)
 end note
 
-note right of OnDuty
-  Policeman is active
-  and can perform duties
+note right of Arresting
+    Success chance:
+    1 - (fatigue + severity) / 20
+    Clamped to [0.1, 0.9]
 end note
 
-note bottom of Assigned
-  Officer has been assigned
-  a criminal to apprehend
-  Success depends on fatigue
-  and crime severity
-end note
-
-note right of Failed
-  Arrest failed, officer
-  fatigue increases
-  Can retry after recovery
-end note
+' Termination
+OnDuty --> [*] : fire()
+OffDuty --> [*] : remove from system
 
 @enduml

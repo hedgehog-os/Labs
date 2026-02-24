@@ -507,25 +507,25 @@ def print_help() -> None:
 ║    citizen list               - Show all citizens         ║
 ║                                                           ║
 ║  POLICE COMMANDS:                                         ║
-║    police hire <lastname> <zone>  - Hire an officer      ║
-║    police fire <lastname>         - Fire an officer      ║
-║    police add-zone <zone>         - Create a zone        ║
-║    police list                    - Show all officers    ║
-║    police info                    - Show zone details    ║
-║    police relocate <idx...> <zone>- Move officers        ║
+║    police hire <lastname> <zone>  - Hire an officer       ║
+║    police fire <lastname>         - Fire an officer       ║
+║    police add-zone <zone>         - Create a zone         ║
+║    police list                    - Show all officers     ║
+║    police info                    - Show zone details     ║
+║    police relocate <idx...> <zone>- Move officers         ║
 ║                                                           ║
 ║  CRIME COMMANDS:                                          ║
-║    statement add <desc> <zone> <suspect_idx> <law_idx>   ║
-║    statement delete <index>       - Remove a report      ║
-║    statement list                 - Show all reports     ║
+║    statement add <desc> <zone> <suspect_idx> <law_idx>    ║
+║    statement delete <index>       - Remove a report       ║
+║    statement list                 - Show all reports      ║
 ║                                                           ║
 ║  INVESTIGATION:                                           ║
 ║    investigate                    - Analyze crimes        ║
-║    investigate --arrest           - Investigate + arrest ║
+║    investigate --arrest           - Investigate + arrest  ║
 ║                                                           ║
 ║  LAW COMMANDS:                                            ║
-║    law add <article> <severity> <desc> - Add a law       ║
-║    law list                          - Show all laws     ║
+║    law add <article> <severity> <desc> - Add a law        ║
+║    law list                          - Show all laws      ║
 ║                                                           ║
 ║  SYSTEM:                                                  ║
 ║    history show                   - View history          ║

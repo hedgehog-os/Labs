@@ -2,13 +2,13 @@
 
 A command-line application for managing police departments, crime investigations, and public security.
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.10+
 - No external dependencies required (uses only standard library)
 - For UML diagrams: PlantUML
 
-## 🚀 Installation
+## Installation
 
 1. Clone the repository:
 ```bash
@@ -19,7 +19,7 @@ cd lab1
 2. (Optional) Create a virtual environment:
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate
 ```
 
 3. Install development dependencies (for testing):
@@ -27,7 +27,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install pytest
 ```
 
-## 📖 Usage
+## Usage
 
 ### Interactive Mode
 
@@ -39,55 +39,38 @@ python main.py
 
 Example session:
 ```bash
-# Populate database manually
-python main.py police add-zone Downtown
-python main.py police add-zone Suburbs
-python main.py citizen add "John Smith"
-python main.py citizen add "Mary Johnson"
-python main.py police hire "Miller" Downtown
-python main.py police hire "Moore" Downtown
-python main.py law add 101 3 "Theft"
-python main.py statement add "Stole a bike" Downtown 0 0
-python main.py statement add "Breaking & entering" Downtown 1 0
+# Create zones
+police> police add-zone Downtown
+police> police add-zone Suburbs
 
-# Investigate ALL crimes at once with arrests
+# Add citizens
+police> citizen add "John Smith"
+police> citizen add "Mary Johnson"
+
+# Hire officers
+police> police hire "Miller" Downtown
+police> police hire "Moore" Downtown
+
+# Add a law
+police> law add 101 3 "Theft"
+
+# File crime reports
+police> statement add "Stole a bike" Downtown 0 0
+police> statement add "Breaking and entering" Downtown 1 0
+
+# Investigate all crimes with arrests
 police> investigate --arrest
-✓ Investigation completed for 2 crime(s):
-  • John Smith is likely guilty
-    Assigned to: Miller
-  • Mary Johnson is likely guilty
-    Assigned to: Moore
-
-🚔 Attempting arrests...
-  ✓ Miller made an arrest!
-  ✗ Moore failed to arrest suspect
-
-📊 Arrest Summary:
-  Successful: 1
-  Failed: 1
-  Crimes removed: 1
-
-📊 Updated Security Levels:
-  Downtown: 2.00/10.00
-  Suburbs: 10.00/10.00
 
 # Check remaining crimes
 police> statement list
-[0] Crime: Breaking & entering (Zone: Downtown, Severity: 3)
 
-# Show zone info with fatigue
+# Show zone info with fatigue levels
 police> police info
-Zone: Downtown
-  Officers: 2
-    - Miller | Fatigue: 🟢 Fresh
-    - Moore | Fatigue: 🟢 Fresh [ASSIGNED]
-  Crimes: 1
-  Security Level: 2.00/10.00
 ```
 
 ### Command-Line Mode
 
-You can also run specific commands directly:
+Execute specific commands directly:
 
 ```bash
 # Add a citizen
@@ -96,7 +79,7 @@ python main.py citizen add "John Doe"
 # Add a zone
 python main.py police add-zone "Downtown"
 
-# Hire a policeman
+# Hire an officer
 python main.py police hire "Smith" "Downtown"
 
 # Add a law
@@ -121,7 +104,7 @@ python main.py history show
 python main.py save
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 lab1/
@@ -148,7 +131,7 @@ lab1/
 └── README.md              # This file
 ```
 
-## 🏛️ Domain Model
+## Domain Model
 
 ### Core Entities
 
@@ -165,51 +148,49 @@ lab1/
 ### Operations
 
 1. **Crime Investigation** - Analyze crimes and identify suspects
-2. **Public Order** - Maintain security through officer deployment
+2. **Public Order Maintenance** - Maintain security through officer deployment
 3. **Citizen Interaction** - Accept crime reports from citizens
 4. **Crime Prevention** - Monitor and respond to security levels
-5. **Arrest Operations** - Apprehend identified criminals
+5. **Criminal Arrest** - Apprehend identified criminals
 
-## 🧪 Testing
+## Testing
 
 Run all unit tests:
 
 ```bash
 pytest
-# or
-python -m pytest
 ```
 
-Run with verbose output and coverage:
+Run with verbose output and coverage report:
 
 ```bash
 pytest -v --cov=police --cov-report=term-missing
 ```
 
-**Coverage: 93%** (69 tests)
+**Code Coverage: 93%** (69 tests)
 
-## 📊 UML Diagrams
+## UML Diagrams
 
 ### Class Diagram
-Shows the structure and relationships between all entities.
+Shows the structure and relationships between all system entities.
 
-![Class Diagram](docs/uml/class_diagram.png)
+File: `docs/uml/class_diagram.puml`
 
 ### State Diagram
 Shows the policeman state machine during arrest operations.
 
-![State Diagram](docs/uml/state_diagram.png)
+File: `docs/uml/state_diagram.puml`
 
 ### Sequence Diagram
-Shows the crime investigation process flow.
+Shows the crime investigation process and component interactions.
 
-![Sequence Diagram](docs/uml/sequence_diagram.png)
+File: `docs/uml/sequence_diagram.puml`
 
 ### Viewing UML Diagrams
 
-The diagrams are created in PlantUML format (.puml files). To view them:
+Diagrams are created in PlantUML format (.puml). To view them:
 
-1. **VS Code Extension**: Install "PlantUML" extension by jebbs
+1. **VS Code**: Install "PlantUML" extension by jebbs
 2. **IntelliJ IDEA**: Install "PlantUML Integration" plugin
 3. **Online**: Use [PlantText](https://www.planttext.com/)
 4. **CLI**: Install PlantUML and run:
@@ -217,7 +198,7 @@ The diagrams are created in PlantUML format (.puml files). To view them:
    plantuml docs/uml/*.puml
    ```
 
-## 🔧 CLI Commands Reference
+## CLI Commands Reference
 
 ### Citizen Commands
 | Command | Description |
@@ -233,7 +214,7 @@ The diagrams are created in PlantUML format (.puml files). To view them:
 | `police fire <lastname>` | Fire an officer |
 | `police add-zone <zone>` | Create a new zone |
 | `police list` | Show all officers |
-| `police info` | Show zone details **with fatigue levels** |
+| `police info` | Show zone details with fatigue levels |
 | `police relocate <idx...> <zone>` | Move officers |
 
 ### Crime Commands
@@ -247,7 +228,7 @@ The diagrams are created in PlantUML format (.puml files). To view them:
 | Command | Description |
 |---------|-------------|
 | `investigate` | Analyze crimes |
-| `investigate --arrest` | Investigate, arrest, **and show updated security** |
+| `investigate --arrest` | Investigate and arrest |
 
 ### Law Commands
 | Command | Description |
@@ -264,7 +245,7 @@ The diagrams are created in PlantUML format (.puml files). To view them:
 | `save` | Save data |
 | `exit`, `quit`, `q` | Save and quit |
 
-## ⚙️ Data Persistence
+## Data Persistence
 
 Data is automatically saved to the `data/` directory in pickle format:
 
@@ -275,27 +256,26 @@ Data is automatically saved to the `data/` directory in pickle format:
 - `laws.pkl` - Legal statutes
 - `security.pkl` - Security levels
 
-## 🎯 Key Features
+## Features
 
-- ✅ **PEP8 Compliant** - Follows Python style guidelines
-- ✅ **Type Hints** - Full type annotation throughout
-- ✅ **Exception Handling** - Custom exception hierarchy
-- ✅ **CLI Interface** - Both interactive and command-line modes with help
-- ✅ **Data Persistence** - State saved between sessions
-- ✅ **Unit Tests** - 69 tests with 93% coverage
-- ✅ **UML Documentation** - Class, state, and sequence diagrams (UML 2.x)
-- ✅ **Security Tracking** - Per-zone security levels with auto-update
-- ✅ **Fatigue System** - Officer fatigue affects arrest success
-- ✅ **GitHub Ready** - Structured for version control
+- PEP8 Compliant - Follows Python style guidelines
+- Type Hints - Full type annotation throughout
+- Exception Handling - Custom exception hierarchy
+- CLI Interface - Both interactive and command-line modes
+- Data Persistence - State saved between sessions
+- Unit Tests - 69 tests with 93% coverage
+- UML Documentation - Class, state, and sequence diagrams (UML 2.x)
+- Security Tracking - Per-zone security levels with auto-update
+- Fatigue System - Officer fatigue affects arrest success
 
-## 📝 License
+## License
 
 This project is created for educational purposes.
 
-## 👨‍💻 Author
+## Author
 
 Mukhamedzianau Egor
 
-## 📅 Version
+## Version
 
 0.1.0
